@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>GBase_Job_Id__c</fullName>
+    <description>Job ID returned from GBase API for tracking async processing</description>
+    <externalId>true</externalId>
+    <label>GBase Job ID</label>
+    <length>100</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

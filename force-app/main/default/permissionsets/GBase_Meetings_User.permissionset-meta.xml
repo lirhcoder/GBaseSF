@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>GBase Meetings User</label>
+    <description>Provides access to GBase Meetings application, objects, and features for standard users.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <license>Salesforce</license>
+
+    <!-- Application Visibility -->
+    <applicationVisibilities>
+        <application>GBase_Meetings</application>
+        <visible>true</visible>
+    </applicationVisibilities>
+
+    <!-- Tab Visibility -->
+    <tabSettings>
+        <tab>GBase_Meeting__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>GBase_Document__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+
+    <!-- Object Permissions: GBase_Meeting__c -->
+    <objectPermissions>
+        <object>GBase_Meeting__c</object>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+
+    <!-- Object Permissions: GBase_Document__c -->
+    <objectPermissions>
+        <object>GBase_Document__c</object>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+
+    <!-- Apex Class Access -->
+    <classAccesses>
+        <apexClass>GBaseApiService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GBaseMeetingController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+</PermissionSet>

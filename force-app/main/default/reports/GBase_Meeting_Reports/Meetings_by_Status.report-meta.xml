@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>GBase_Meeting__c.Meeting_Title__c</field>
+    </columns>
+    <columns>
+        <field>GBase_Meeting__c.Meeting_Date__c</field>
+    </columns>
+    <columns>
+        <field>GBase_Meeting__c.Duration_Minutes__c</field>
+    </columns>
+    <columns>
+        <field>GBase_Meeting__c.Account__c</field>
+    </columns>
+    <description>Meetings grouped by status</description>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>GBase_Meeting__c.Status__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Meetings by Status</name>
+    <reportType>CustomEntity$GBase_Meeting__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>GBase_Meeting__c.Meeting_Date__c</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

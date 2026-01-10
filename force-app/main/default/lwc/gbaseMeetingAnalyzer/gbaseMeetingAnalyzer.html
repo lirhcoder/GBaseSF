@@ -1,0 +1,89 @@
+<template>
+    <lightning-card title="Upload Meeting Audio" icon-name="standard:voice_call">
+        <div class="slds-p-around_medium">
+            <!-- File Upload Section -->
+            <div class="slds-form-element slds-m-bottom_medium">
+                <label class="slds-form-element__label" for="audio-url">Audio File URL</label>
+                <div class="slds-form-element__control">
+                    <lightning-input
+                        type="url"
+                        name="audioUrl"
+                        value={audioUrl}
+                        placeholder="Enter audio file URL (e.g., https://...)"
+                        onchange={handleUrlChange}
+                        class="slds-m-bottom_small">
+                    </lightning-input>
+                </div>
+                <div class="slds-form-element__help">
+                    Supported formats: MP3, WAV, M4A, FLAC
+                </div>
+            </div>
+
+            <!-- Or File Upload -->
+            <div class="slds-m-bottom_medium">
+                <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                    Or upload from your computer:
+                </p>
+                <lightning-file-upload
+                    label="Upload Audio"
+                    name="fileUploader"
+                    accept=".mp3,.wav,.m4a,.flac"
+                    record-id={recordId}
+                    onuploadfinished={handleUploadFinished}>
+                </lightning-file-upload>
+            </div>
+
+            <!-- Meeting Details -->
+            <lightning-record-edit-form
+                object-api-name="GBase_Meeting__c"
+                record-id={recordId}
+                onsuccess={handleSuccess}
+                onerror={handleError}>
+
+                <lightning-messages></lightning-messages>
+
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                        <lightning-input-field field-name="Meeting_Title__c" required></lightning-input-field>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                        <lightning-input-field field-name="Meeting_Date__c"></lightning-input-field>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                        <lightning-input-field field-name="Duration_Minutes__c"></lightning-input-field>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                        <lightning-input-field field-name="Account__c"></lightning-input-field>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                        <lightning-input-field field-name="Opportunity__c"></lightning-input-field>
+                    </div>
+                </div>
+
+                <div class="slds-m-top_medium slds-clearfix">
+                    <div class="slds-float_right">
+                        <lightning-button
+                            label="Cancel"
+                            onclick={handleCancel}
+                            class="slds-m-right_small">
+                        </lightning-button>
+                        <lightning-button
+                            label="Save & Analyze"
+                            type="submit"
+                            variant="brand"
+                            disabled={isSubmitting}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </lightning-record-edit-form>
+
+            <!-- Processing Indicator -->
+            <template if:true={isSubmitting}>
+                <div class="slds-align_absolute-center slds-m-top_medium">
+                    <lightning-spinner alternative-text="Processing..." size="medium"></lightning-spinner>
+                    <span class="slds-m-left_small">{processingMessage}</span>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

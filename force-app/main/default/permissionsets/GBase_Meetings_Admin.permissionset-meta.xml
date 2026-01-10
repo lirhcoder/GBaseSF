@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>GBase Meetings Admin</label>
+    <description>Full administrative access to GBase Meetings application including delete and view all records.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <license>Salesforce</license>
+
+    <!-- Application Visibility -->
+    <applicationVisibilities>
+        <application>GBase_Meetings</application>
+        <visible>true</visible>
+    </applicationVisibilities>
+
+    <!-- Tab Visibility -->
+    <tabSettings>
+        <tab>GBase_Meeting__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>GBase_Document__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+
+    <!-- Object Permissions: GBase_Meeting__c (Full Access) -->
+    <objectPermissions>
+        <object>GBase_Meeting__c</object>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+
+    <!-- Object Permissions: GBase_Document__c (Full Access) -->
+    <objectPermissions>
+        <object>GBase_Document__c</object>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+
+    <!-- Apex Class Access -->
+    <classAccesses>
+        <apexClass>GBaseApiService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GBaseMeetingController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GBaseWebhookHandler</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+
+    <!-- Custom Setting Access -->
+    <customSettingAccesses>
+        <enabled>true</enabled>
+        <name>GBase_Settings__c</name>
+    </customSettingAccesses>
+</PermissionSet>

@@ -1,0 +1,120 @@
+<template>
+    <lightning-card title="Meeting Analysis" icon-name="standard:analysis">
+        <div slot="actions">
+            <lightning-button-group>
+                <lightning-button
+                    label="Start Analysis"
+                    onclick={handleStartAnalysis}
+                    disabled={isAnalyzing}
+                    variant="brand">
+                </lightning-button>
+                <lightning-button
+                    label="Generate Proposal"
+                    onclick={handleGenerateProposal}
+                    disabled={disableDocumentButtons}>
+                </lightning-button>
+                <lightning-button
+                    label="Generate PPT"
+                    onclick={handleGeneratePpt}
+                    disabled={disableDocumentButtons}>
+                </lightning-button>
+            </lightning-button-group>
+        </div>
+
+        <!-- Status Banner -->
+        <template if:true={showStatusBanner}>
+            <div class={statusBannerClass}>
+                <lightning-icon icon-name={statusIcon} size="small" class="slds-m-right_small"></lightning-icon>
+                <span>{statusMessage}</span>
+                <template if:true={isProcessing}>
+                    <lightning-spinner alternative-text="Processing..." size="small" class="slds-m-left_small"></lightning-spinner>
+                </template>
+            </div>
+        </template>
+
+        <div class="slds-p-around_medium">
+            <!-- Meeting Info Section -->
+            <lightning-accordion allow-multiple-sections-open active-section-name={activeSections}>
+                <lightning-accordion-section name="info" label="Meeting Information">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                            <p class="slds-text-title_caps">Title</p>
+                            <p class="slds-text-body_regular">{meeting.Meeting_Title__c}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                            <p class="slds-text-title_caps">Date</p>
+                            <p class="slds-text-body_regular">{formattedDate}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                            <p class="slds-text-title_caps">Duration</p>
+                            <p class="slds-text-body_regular">{meeting.Duration_Minutes__c} minutes</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                            <p class="slds-text-title_caps">Status</p>
+                            <lightning-badge label={meeting.Status__c} class={statusBadgeClass}></lightning-badge>
+                        </div>
+                    </div>
+                </lightning-accordion-section>
+
+                <!-- Summary Section -->
+                <lightning-accordion-section name="summary" label="AI Summary">
+                    <template if:true={hasSummary}>
+                        <div class="slds-box slds-theme_shade slds-p-around_medium">
+                            <lightning-formatted-rich-text value={meeting.Summary__c}></lightning-formatted-rich-text>
+                        </div>
+                    </template>
+                    <template if:false={hasSummary}>
+                        <div class="slds-align_absolute-center slds-text-color_weak slds-p-around_medium">
+                            No summary available. Start analysis to generate.
+                        </div>
+                    </template>
+                </lightning-accordion-section>
+
+                <!-- Transcript Section -->
+                <lightning-accordion-section name="transcript" label="Transcript">
+                    <template if:true={hasTranscript}>
+                        <div class="slds-box transcript-box">
+                            <lightning-formatted-rich-text value={meeting.Transcript__c}></lightning-formatted-rich-text>
+                        </div>
+                    </template>
+                    <template if:false={hasTranscript}>
+                        <div class="slds-align_absolute-center slds-text-color_weak slds-p-around_medium">
+                            No transcript available.
+                        </div>
+                    </template>
+                </lightning-accordion-section>
+
+                <!-- Analysis Results Section -->
+                <lightning-accordion-section name="analysis" label="Analysis Results">
+                    <template if:true={hasAnalysis}>
+                        <div class="slds-box slds-theme_shade">
+                            <lightning-formatted-rich-text value={meeting.Analysis_Result__c}></lightning-formatted-rich-text>
+                        </div>
+                    </template>
+                    <template if:false={hasAnalysis}>
+                        <div class="slds-align_absolute-center slds-text-color_weak slds-p-around_medium">
+                            No analysis results available.
+                        </div>
+                    </template>
+                </lightning-accordion-section>
+
+                <!-- Documents Section -->
+                <lightning-accordion-section name="documents" label="Generated Documents">
+                    <template if:true={hasDocuments}>
+                        <lightning-datatable
+                            key-field="Id"
+                            data={documents}
+                            columns={documentColumns}
+                            hide-checkbox-column>
+                        </lightning-datatable>
+                    </template>
+                    <template if:false={hasDocuments}>
+                        <div class="slds-align_absolute-center slds-text-color_weak slds-p-around_medium">
+                            No documents generated yet.
+                        </div>
+                    </template>
+                </lightning-accordion-section>
+            </lightning-accordion>
+        </div>
+    </lightning-card>
+</template>

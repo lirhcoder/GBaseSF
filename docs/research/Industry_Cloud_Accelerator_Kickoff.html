@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industry Cloud Accelerator - Project Kickoff Plan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0176D3;
+            --primary-dark: #014486;
+            --success: #2E844A;
+            --warning: #DD7A01;
+            --danger: #C23934;
+            --bg-light: #F3F3F3;
+            --border: #DDDBDA;
+            --text-primary: #181818;
+            --text-secondary: #706E6B;
+        }
+
+        body {
+            font-family: 'Salesforce Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            text-align: center;
+        }
+
+        .meta-item .label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .meta-item .value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            background: #f8f8f8;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .nav-tab:hover {
+            background: #eee;
+        }
+
+        .nav-tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            background: white;
+        }
+
+        /* Content */
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title .icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+
+        /* Overview Cards */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .overview-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .overview-card h3 {
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .overview-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .overview-card .highlight {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+            margin-top: 10px;
+        }
+
+        /* Team Structure */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .team-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .team-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .team-card .role {
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .team-card .tasks {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: left;
+        }
+
+        .team-card .tasks li {
+            margin: 5px 0;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .team-card .tasks li::before {
+            content: ">";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--success));
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            width: 45%;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-right: auto;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: auto;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 0 0 4px var(--primary);
+        }
+
+        .timeline-week {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: -30px;
+            background: var(--primary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .timeline-content h4 {
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .timeline-tasks {
+            list-style: none;
+        }
+
+        .timeline-tasks li {
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .timeline-tasks li:last-child {
+            border-bottom: none;
+        }
+
+        .task-day {
+            background: var(--bg-light);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .deliverable {
+            background: #E8F4FD;
+            color: var(--primary);
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+
+        /* Sprint Board */
+        .sprint-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .sprint-column {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .sprint-header {
+            text-align: center;
+            padding: 10px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .sprint-task {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--primary);
+            font-size: 0.85rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .sprint-task.high {
+            border-left-color: var(--danger);
+        }
+
+        .sprint-task.medium {
+            border-left-color: var(--warning);
+        }
+
+        .sprint-task .task-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .sprint-task .task-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Technical Stack */
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .tech-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .tech-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .tech-icon.python { background: #3776AB; color: white; }
+        .tech-icon.salesforce { background: #00A1E0; color: white; }
+        .tech-icon.elasticsearch { background: #005571; color: white; }
+        .tech-icon.chromadb { background: #FF6B6B; color: white; }
+        .tech-icon.anthropic { background: #191919; color: white; }
+        .tech-icon.docker { background: #2496ED; color: white; }
+
+        .tech-info h4 {
+            font-size: 0.95rem;
+            margin-bottom: 3px;
+        }
+
+        .tech-info p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Risk Matrix */
+        .risk-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .risk-table th, .risk-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .risk-table th {
+            background: var(--bg-light);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .risk-level {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .risk-level.high { background: #FFDEDE; color: var(--danger); }
+        .risk-level.medium { background: #FFF3CD; color: var(--warning); }
+        .risk-level.low { background: #D4EDDA; color: var(--success); }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .metric-card.success {
+            background: linear-gradient(135deg, var(--success) 0%, #1e5631 100%);
+        }
+
+        .metric-card.warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #b35900 100%);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .checklist .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .checklist .checkbox.checked {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        /* Architecture Diagram */
+        .architecture {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .arch-layer {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .arch-layer-title {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .arch-components {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .arch-component {
+            background: var(--primary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .arch-component.gbase {
+            background: #764ba2;
+        }
+
+        .arch-component.external {
+            background: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-light);
+            padding: 30px 40px;
+            text-align: center;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .footer .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8rem; }
+            .content { padding: 20px; }
+            .timeline::before { left: 20px; }
+            .timeline-item { flex-direction: column !important; }
+            .timeline-content { width: 100%; margin-left: 40px !important; }
+            .timeline-dot { left: 20px; }
+            .sprint-board { grid-template-columns: 1fr; }
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+            .nav-tabs { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Industry Cloud Accelerator</h1>
+            <div class="subtitle">GBase Support x Salesforce Manufacturing Cloud</div>
+            <div class="project-meta">
+                <div class="meta-item">
+                    <div class="label">Project Code</div>
+                    <div class="value">ICA-2026-01</div>
+                </div>
+                <div class="meta-item">
+                    <div class="label">Start Date</div>
+                    <div class="value">2026-01-13</div>
+                </div>
+                <div class="meta-item">
+                    <div class="label">Duration</div>
+                    <div class="value">4 Weeks</div>
+                </div>
+                <div class="meta-item">
+                    <div class="label">Priority</div>
+                    <div class="value">Phase 1</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-tabs">
+            <div class="nav-tab active">Overview</div>
+            <div class="nav-tab">Team</div>
+            <div class="nav-tab">Sprint Plan</div>
+            <div class="nav-tab">Technical</div>
+            <div class="nav-tab">Risks</div>
+            <div class="nav-tab">Metrics</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+
+            <!-- Section 1: Project Overview -->
+            <div class="section" id="overview">
+                <h2 class="section-title">
+                    <span class="icon">1</span>
+                    Project Overview
+                </h2>
+
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <h3>Project Goal</h3>
+                        <p>Build an AI-powered knowledge assistant for Manufacturing Cloud users, enabling instant access to product specs, supplier info, and compliance documents via RAG technology.</p>
+                    </div>
+                    <div class="overview-card">
+                        <h3>Target Market</h3>
+                        <p>Manufacturing companies using Salesforce Manufacturing Cloud</p>
+                        <span class="highlight">60%</span>
+                        <p style="font-size:0.85rem; color:#666;">of new SF customers come from Industry Clouds</p>
+                    </div>
+                    <div class="overview-card">
+                        <h3>GBase Capability Match</h3>
+                        <p>Core RAG engine, multilingual support, document connectors can be directly reused</p>
+                        <span class="highlight">80%</span>
+                        <p style="font-size:0.85rem; color:#666;">code reusability</p>
+                    </div>
+                    <div class="overview-card">
+                        <h3>MVP Scope</h3>
+                        <p>Manufacturing knowledge RAG + LWC component + basic API integration</p>
+                        <span class="highlight">4 Weeks</span>
+                        <p style="font-size:0.85rem; color:#666;">to first demo</p>
+                    </div>
+                </div>
+
+                <!-- Value Proposition -->
+                <h3 style="margin: 30px 0 15px; color: var(--primary-dark);">Value Proposition</h3>
+                <table class="risk-table">
+                    <tr>
+                        <th style="width:30%">Pain Point</th>
+                        <th style="width:35%">Current State</th>
+                        <th style="width:35%">With ICA</th>
+                    </tr>
+                    <tr>
+                        <td>Product Spec Lookup</td>
+                        <td>Manual search across multiple systems (5-10 min)</td>
+                        <td>Instant AI-powered answer with citations (<30s)</td>
+                    </tr>
+                    <tr>
+                        <td>Compliance Documentation</td>
+                        <td>Navigate complex document repositories</td>
+                        <td>Natural language query: "What certifications needed for EU?"</td>
+                    </tr>
+                    <tr>
+                        <td>Supplier Information</td>
+                        <td>Check multiple reports for performance data</td>
+                        <td>Unified view with quality scores and history</td>
+                    </tr>
+                    <tr>
+                        <td>Cross-language Knowledge</td>
+                        <td>Manually translate between CN/JP/EN docs</td>
+                        <td>Auto-translate and cross-reference terms</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Section 2: Team Structure -->
+            <div class="section" id="team">
+                <h2 class="section-title">
+                    <span class="icon">2</span>
+                    Team Structure
+                </h2>
+
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-avatar">PM</div>
+                        <h4>Product Manager</h4>
+                        <div class="role">Owner</div>
+                        <ul class="tasks">
+                            <li>Define MVP scope & priorities</li>
+                            <li>Customer interviews & feedback</li>
+                            <li>Go-to-market strategy</li>
+                            <li>AppExchange listing prep</li>
+                        </ul>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-avatar">BE</div>
+                        <h4>Backend Engineer</h4>
+                        <div class="role">RAG & API</div>
+                        <ul class="tasks">
+                            <li>RAG engine configuration</li>
+                            <li>Salesforce API integration</li>
+                            <li>Knowledge ingestion pipeline</li>
+                            <li>Industry term expansion</li>
+                        </ul>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-avatar">SF</div>
+                        <h4>Salesforce Developer</h4>
+                        <div class="role">LWC & Apex</div>
+                        <ul class="tasks">
+                            <li>LWC component development</li>
+                            <li>Apex controller & callouts</li>
+                            <li>Manufacturing Cloud objects</li>
+                            <li>Package & deployment</li>
+                        </ul>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-avatar">QA</div>
+                        <h4>QA Engineer</h4>
+                        <div class="role">Testing (50%)</div>
+                        <ul class="tasks">
+                            <li>RAG quality evaluation</li>
+                            <li>Salesforce integration tests</li>
+                            <li>Performance testing</li>
+                            <li>Security review prep</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: #E8F4FD; border-radius: 12px;">
+                    <h4 style="color: var(--primary-dark); margin-bottom: 10px;">Resource Summary</h4>
+                    <div style="display: flex; gap: 40px; flex-wrap: wrap;">
+                        <div><strong>Total FTE:</strong> 2.5 developers</div>
+                        <div><strong>Duration:</strong> 4 weeks</div>
+                        <div><strong>Total Effort:</strong> 30-40 person-days</div>
+                        <div><strong>GBase Reuse:</strong> ~24 person-days saved</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Sprint Plan -->
+            <div class="section" id="sprint">
+                <h2 class="section-title">
+                    <span class="icon">3</span>
+                    4-Week Sprint Plan
+                </h2>
+
+                <!-- Timeline View -->
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <span class="timeline-week">Week 1</span>
+                            <h4>Foundation & API Integration</h4>
+                            <ul class="timeline-tasks">
+                                <li>
+                                    <span class="task-day">D1-2</span>
+                                    <span>Salesforce Manufacturing Cloud API integration</span>
+                                    <span class="deliverable">API Client</span>
+                                </li>
+                                <li>
+                                    <span class="task-day">D3-4</span>
+                                    <span>Knowledge base schema design + Elasticsearch index</span>
+                                    <span class="deliverable">Index Template</span>
+                                </li>
+                                <li>
+                                    <span class="task-day">D5</span>
+                                    <span>Embedding model integration + ChromaDB setup</span>
+                                    <span class="deliverable">RAG Base</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <span class="timeline-week">Week 2</span>
+                            <h4>RAG Engine & Knowledge</h4>
+                            <ul class="timeline-tasks">
+                                <li>
+                                    <span class="task-day">D1-2</span>
+                                    <span>Hybrid retrieval implementation (BM25 + Vector)</span>
+                                    <span class="deliverable">Retriever</span>
+                                </li>
+                                <li>
+                                    <span class="task-day">D3-4</span>
+                                    <span>Answer generation with citations</span>
+                                    <span class="deliverable">Generator</span>
+                                </li>
+                                <li>
+                                    <span class="task-day">D5</span>
+                                    <span>Manufacturing term vocabulary & expansion</span>
+                                    <span class="deliverable">Term Library</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <span class="timeline-week">Week 3</span>
+                            <h4>Salesforce UI Integration</h4>
+                            <ul class="timeline-tasks">
+                                <li>
+                                    <span class="task-day">D1-2</span>
+                                    <span>LWC component development (query UI, results display)</span>
+                                    <span class="deliverable">LWC Component</span>
+                                </li>
+                                <li>
+                                    <span class="task-day">D3-4</span>
+                                    <span>Apex controller & external callout</span>
+                                    <span class="deliverable">Apex Layer</span>
+                                </li>
+                                <li>
+                                    <span class="task-day">D5</span>
+                                    <span>Salesforce context integration (Account/Product)</span>
+                                    <span class="deliverable">Context Binding</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <span class="timeline-week">Week 4</span>
+                            <h4>Testing & Deployment</h4>
+                            <ul class="timeline-tasks">
+                                <li>
+                                    <span class="task-day">D1-2</span>
+                                    <span>Knowledge ingestion scripts (Product2, Suppliers)</span>
+                                    <span class="deliverable">Data Pipeline</span>
+                                </li>
+                                <li>
+                                    <span class="task-day">D3-4</span>
+                                    <span>Integration testing & RAG quality evaluation</span>
+                                    <span class="deliverable">Test Report</span>
+                                </li>
+                                <li>
+                                    <span class="task-day">D5</span>
+                                    <span>AppExchange package preparation</span>
+                                    <span class="deliverable">Package</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
+                </div>
+
+                <!-- Sprint Board -->
+                <h3 style="margin: 40px 0 20px; color: var(--primary-dark);">Task Board (Sprint 1 Detail)</h3>
+                <div class="sprint-board">
+                    <div class="sprint-column">
+                        <div class="sprint-header">To Do</div>
+                        <div class="sprint-task high">
+                            <div class="task-title">SF Connected App Setup</div>
+                            <div class="task-meta">
+                                <span>SF Dev</span>
+                                <span>2h</span>
+                            </div>
+                        </div>
+                        <div class="sprint-task">
+                            <div class="task-title">JWT Auth Flow</div>
+                            <div class="task-meta">
+                                <span>Backend</span>
+                                <span>4h</span>
+                            </div>
+                        </div>
+                        <div class="sprint-task">
+                            <div class="task-title">ES Index Mapping</div>
+                            <div class="task-meta">
+                                <span>Backend</span>
+                                <span>3h</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sprint-column">
+                        <div class="sprint-header">In Progress</div>
+                        <div class="sprint-task high">
+                            <div class="task-title">Manufacturing Cloud API Client</div>
+                            <div class="task-meta">
+                                <span>Backend</span>
+                                <span>8h</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sprint-column">
+                        <div class="sprint-header">Review</div>
+                        <div class="sprint-task">
+                            <div class="task-title">Dev Environment Setup</div>
+                            <div class="task-meta">
+                                <span>All</span>
+                                <span>4h</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sprint-column">
+                        <div class="sprint-header">Done</div>
+                        <div class="sprint-task">
+                            <div class="task-title">Project Kickoff</div>
+                            <div class="task-meta">
+                                <span>PM</span>
+                                <span>2h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Technical Architecture -->
+            <div class="section" id="technical">
+                <h2 class="section-title">
+                    <span class="icon">4</span>
+                    Technical Architecture
+                </h2>
+
+                <!-- Architecture Diagram -->
+                <div class="architecture">
+                    <div class="arch-layer">
+                        <div class="arch-layer-title">User Interface Layer</div>
+                        <div class="arch-components">
+                            <span class="arch-component">LWC Knowledge Widget</span>
+                            <span class="arch-component external">Slack Bot (Phase 2)</span>
+                            <span class="arch-component external">Mobile (Phase 2)</span>
+                        </div>
+                    </div>
+                    <div style="text-align: center; color: var(--text-secondary); padding: 5px;">v</div>
+                    <div class="arch-layer">
+                        <div class="arch-layer-title">Query Processing Layer</div>
+                        <div class="arch-components">
+                            <span class="arch-component gbase">Intent Classifier (GBase)</span>
+                            <span class="arch-component gbase">Context Extractor (GBase)</span>
+                            <span class="arch-component">Industry Term Resolver</span>
+                        </div>
+                    </div>
+                    <div style="text-align: center; color: var(--text-secondary); padding: 5px;">v</div>
+                    <div class="arch-layer">
+                        <div class="arch-layer-title">RAG Engine Layer</div>
+                        <div class="arch-components">
+                            <span class="arch-component gbase">Industry Embeddings (GBase)</span>
+                            <span class="arch-component gbase">Hybrid Retrieval (GBase)</span>
+                            <span class="arch-component gbase">Citation Generator (GBase)</span>
+                        </div>
+                    </div>
+                    <div style="text-align: center; color: var(--text-secondary); padding: 5px;">v</div>
+                    <div class="arch-layer">
+                        <div class="arch-layer-title">Knowledge Layer</div>
+                        <div class="arch-components">
+                            <span class="arch-component">Product Knowledge</span>
+                            <span class="arch-component">Compliance Docs</span>
+                            <span class="arch-component">Supplier Database</span>
+                        </div>
+                    </div>
+                    <div style="text-align: center; color: var(--text-secondary); padding: 5px;">v</div>
+                    <div class="arch-layer">
+                        <div class="arch-layer-title">Salesforce Integration Layer</div>
+                        <div class="arch-components">
+                            <span class="arch-component">Manufacturing Cloud API</span>
+                            <span class="arch-component">Account/Product API</span>
+                            <span class="arch-component">Case/Service Cloud</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tech Stack -->
+                <h3 style="margin: 30px 0 20px; color: var(--primary-dark);">Technology Stack</h3>
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <div class="tech-icon python">Py</div>
+                        <div class="tech-info">
+                            <h4>Python 3.11+</h4>
+                            <p>Backend API & RAG Engine</p>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon salesforce">SF</div>
+                        <div class="tech-info">
+                            <h4>Salesforce API v66.0</h4>
+                            <p>Manufacturing Cloud Integration</p>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon elasticsearch">ES</div>
+                        <div class="tech-info">
+                            <h4>Elasticsearch 8.x</h4>
+                            <p>BM25 Keyword Search</p>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon chromadb">C</div>
+                        <div class="tech-info">
+                            <h4>ChromaDB</h4>
+                            <p>Vector Store</p>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon anthropic">A</div>
+                        <div class="tech-info">
+                            <h4>Claude API</h4>
+                            <p>Answer Generation</p>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon docker">D</div>
+                        <div class="tech-info">
+                            <h4>Docker Compose</h4>
+                            <p>Deployment</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GBase Reuse -->
+                <div style="margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%); border-radius: 12px; border: 1px solid #c3d7f7;">
+                    <h4 style="color: var(--primary-dark); margin-bottom: 15px;">GBase Support Code Reuse</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="background: white; padding: 15px; border-radius: 8px;">
+                            <div style="color: var(--success); font-weight: 600;">Direct Reuse</div>
+                            <ul style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px; padding-left: 20px;">
+                                <li>RAG Engine Core</li>
+                                <li>Embedding Pipeline</li>
+                                <li>Vector Store Wrapper</li>
+                                <li>Citation Generator</li>
+                            </ul>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px;">
+                            <div style="color: var(--warning); font-weight: 600;">Adapt</div>
+                            <ul style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px; padding-left: 20px;">
+                                <li>Industry Term Vocab</li>
+                                <li>Query Expansion</li>
+                                <li>Multilingual Handler</li>
+                            </ul>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px;">
+                            <div style="color: var(--danger); font-weight: 600;">New Development</div>
+                            <ul style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px; padding-left: 20px;">
+                                <li>Manufacturing Cloud API Client</li>
+                                <li>LWC Component</li>
+                                <li>Apex Controller</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Risk Management -->
+            <div class="section" id="risks">
+                <h2 class="section-title">
+                    <span class="icon">5</span>
+                    Risk Management
+                </h2>
+
+                <table class="risk-table">
+                    <thead>
+                        <tr>
+                            <th>Risk</th>
+                            <th>Level</th>
+                            <th>Impact</th>
+                            <th>Mitigation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Manufacturing Cloud API access restrictions</td>
+                            <td><span class="risk-level medium">Medium</span></td>
+                            <td>Feature scope reduction</td>
+                            <td>Use Salesforce Partner org for testing; fallback to standard SOQL</td>
+                        </tr>
+                        <tr>
+                            <td>RAG answer quality below threshold</td>
+                            <td><span class="risk-level medium">Medium</span></td>
+                            <td>User adoption issues</td>
+                            <td>Week 2 quality gate; iterate on retrieval strategy</td>
+                        </tr>
+                        <tr>
+                            <td>AppExchange security review delay</td>
+                            <td><span class="risk-level low">Low</span></td>
+                            <td>Launch delay</td>
+                            <td>Run security scanner early; use existing GBase patterns</td>
+                        </tr>
+                        <tr>
+                            <td>Industry term coverage insufficient</td>
+                            <td><span class="risk-level low">Low</span></td>
+                            <td>Query understanding failures</td>
+                            <td>Start with core terms; iterate based on user queries</td>
+                        </tr>
+                        <tr>
+                            <td>LWC performance issues</td>
+                            <td><span class="risk-level low">Low</span></td>
+                            <td>Poor UX</td>
+                            <td>Async loading; pagination for large results</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Dependencies -->
+                <h3 style="margin: 30px 0 15px; color: var(--primary-dark);">External Dependencies</h3>
+                <ul class="checklist">
+                    <li>
+                        <span class="checkbox checked">Check</span>
+                        <span><strong>Salesforce Partner Account</strong> - Required for AppExchange listing</span>
+                    </li>
+                    <li>
+                        <span class="checkbox"></span>
+                        <span><strong>Manufacturing Cloud License</strong> - Dev org access for API testing</span>
+                    </li>
+                    <li>
+                        <span class="checkbox checked">Check</span>
+                        <span><strong>Claude API Access</strong> - Already available via GBase</span>
+                    </li>
+                    <li>
+                        <span class="checkbox checked">Check</span>
+                        <span><strong>Cloud Infrastructure</strong> - Docker hosting environment</span>
+                    </li>
+                    <li>
+                        <span class="checkbox"></span>
+                        <span><strong>POC Customer</strong> - Manufacturing company for validation</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Section 6: Success Metrics -->
+            <div class="section" id="metrics">
+                <h2 class="section-title">
+                    <span class="icon">6</span>
+                    Success Metrics
+                </h2>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="metric-value">&lt;2s</span>
+                        <div class="metric-label">Query Response Time</div>
+                    </div>
+                    <div class="metric-card success">
+                        <span class="metric-value">&gt;80%</span>
+                        <div class="metric-label">Retrieval Accuracy</div>
+                    </div>
+                    <div class="metric-card warning">
+                        <span class="metric-value">85%</span>
+                        <div class="metric-label">User Satisfaction Target</div>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-value">99.5%</span>
+                        <div class="metric-label">System Availability</div>
+                    </div>
+                </div>
+
+                <!-- Business Metrics -->
+                <h3 style="margin: 40px 0 20px; color: var(--primary-dark);">Business Success Criteria</h3>
+                <table class="risk-table">
+                    <tr>
+                        <th>Metric</th>
+                        <th>Target</th>
+                        <th>Measurement Method</th>
+                    </tr>
+                    <tr>
+                        <td>First Call Resolution Rate</td>
+                        <td>+15% improvement</td>
+                        <td>Service Cloud report comparison</td>
+                    </tr>
+                    <tr>
+                        <td>Quote Preparation Time</td>
+                        <td>-30% reduction</td>
+                        <td>User survey pre/post</td>
+                    </tr>
+                    <tr>
+                        <td>Knowledge Query Volume</td>
+                        <td>100+ queries/week</td>
+                        <td>Application analytics</td>
+                    </tr>
+                    <tr>
+                        <td>POC Customer Conversion</td>
+                        <td>2+ paid customers</td>
+                        <td>Sales pipeline</td>
+                    </tr>
+                </table>
+
+                <!-- MVP Definition -->
+                <div style="margin-top: 30px; padding: 25px; background: #f0fff4; border-radius: 12px; border: 1px solid #c6f6d5;">
+                    <h4 style="color: var(--success); margin-bottom: 15px;">MVP Definition of Done</h4>
+                    <ul class="checklist">
+                        <li>
+                            <span class="checkbox"></span>
+                            <span>LWC component displays in Salesforce Account/Product pages</span>
+                        </li>
+                        <li>
+                            <span class="checkbox"></span>
+                            <span>User can ask natural language questions about products</span>
+                        </li>
+                        <li>
+                            <span class="checkbox"></span>
+                            <span>System returns answers with source citations</span>
+                        </li>
+                        <li>
+                            <span class="checkbox"></span>
+                            <span>Manufacturing terms (BOM, MOQ, etc.) are correctly interpreted</span>
+                        </li>
+                        <li>
+                            <span class="checkbox"></span>
+                            <span>Response time under 3 seconds for 95% of queries</span>
+                        </li>
+                        <li>
+                            <span class="checkbox"></span>
+                            <span>Basic Chinese/English/Japanese term support</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Section 7: Next Steps -->
+            <div class="section" id="next-steps">
+                <h2 class="section-title">
+                    <span class="icon">7</span>
+                    Immediate Next Steps
+                </h2>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div style="background: #fff3cd; border-radius: 12px; padding: 25px; border-left: 4px solid var(--warning);">
+                        <h4 style="color: #856404; margin-bottom: 15px;">This Week (Jan 13-17)</h4>
+                        <ul style="padding-left: 20px; color: #856404;">
+                            <li>Confirm team assignments</li>
+                            <li>Set up Salesforce Dev Hub org</li>
+                            <li>Request Manufacturing Cloud trial</li>
+                            <li>Initialize project repository</li>
+                            <li>Schedule daily standups</li>
+                        </ul>
+                    </div>
+                    <div style="background: #d4edda; border-radius: 12px; padding: 25px; border-left: 4px solid var(--success);">
+                        <h4 style="color: #155724; margin-bottom: 15px;">Before Sprint Start</h4>
+                        <ul style="padding-left: 20px; color: #155724;">
+                            <li>GBase RAG codebase review</li>
+                            <li>Manufacturing Cloud API documentation study</li>
+                            <li>Create industry term seed list</li>
+                            <li>Identify POC customer candidate</li>
+                            <li>Set up monitoring/logging</li>
+                        </ul>
+                    </div>
+                    <div style="background: #cce5ff; border-radius: 12px; padding: 25px; border-left: 4px solid var(--primary);">
+                        <h4 style="color: #004085; margin-bottom: 15px;">Week 1 Milestone</h4>
+                        <ul style="padding-left: 20px; color: #004085;">
+                            <li>API client connects to SF org</li>
+                            <li>Can query SalesAgreement, AccountForecast</li>
+                            <li>ES index created with sample data</li>
+                            <li>Vector store accepting embeddings</li>
+                            <li>Basic query endpoint returns results</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="logo">GBase Support</div>
+            <p>Industry Cloud Accelerator Project Kickoff</p>
+            <p style="margin-top: 10px; font-size: 0.85rem;">Generated: 2026-01-10 | Version 1.0</p>
+        </div>
+    </div>
+
+    <script>
+        // Tab navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Meeting Intelligence - 开发阶段详细规划</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #7C3AED;
+            --primary-dark: #5B21B6;
+            --sf-blue: #0176D3;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-600: #4B5563;
+            --gray-900: #111827;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+            color: white;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .header .timeline-summary {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .header .timeline-item {
+            text-align: center;
+        }
+
+        .header .timeline-item .value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .header .timeline-item .label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        /* Phase Navigation */
+        .phase-nav {
+            background: var(--gray-100);
+            padding: 20px 50px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .phase-nav-item {
+            padding: 10px 20px;
+            background: white;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .phase-nav-item:hover {
+            border-color: var(--primary);
+        }
+
+        .phase-nav-item.p0 { color: #6b7280; }
+        .phase-nav-item.p1 { color: #3b82f6; }
+        .phase-nav-item.p2 { color: #8b5cf6; }
+        .phase-nav-item.p3 { color: #06b6d4; }
+        .phase-nav-item.p4 { color: #10b981; }
+        .phase-nav-item.p5 { color: #f59e0b; }
+        .phase-nav-item.p6 { color: #ef4444; }
+        .phase-nav-item.p7 { color: #ec4899; }
+        .phase-nav-item.p8 { color: #14b8a6; }
+
+        /* Content */
+        .content {
+            padding: 50px;
+        }
+
+        /* Phase Card */
+        .phase-card {
+            margin-bottom: 60px;
+            border: 2px solid var(--gray-200);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .phase-header {
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .phase-header.p0 { background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); }
+        .phase-header.p1 { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); }
+        .phase-header.p2 { background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); }
+        .phase-header.p3 { background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%); }
+        .phase-header.p4 { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); }
+        .phase-header.p5 { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); }
+        .phase-header.p6 { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); }
+        .phase-header.p7 { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); }
+        .phase-header.p8 { background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%); }
+
+        .phase-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .phase-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .phase-number.p0 { background: #6b7280; }
+        .phase-number.p1 { background: #3b82f6; }
+        .phase-number.p2 { background: #8b5cf6; }
+        .phase-number.p3 { background: #06b6d4; }
+        .phase-number.p4 { background: #10b981; }
+        .phase-number.p5 { background: #f59e0b; }
+        .phase-number.p6 { background: #ef4444; }
+        .phase-number.p7 { background: #ec4899; }
+        .phase-number.p8 { background: #14b8a6; }
+
+        .phase-title h2 {
+            font-size: 1.5rem;
+            color: var(--gray-900);
+        }
+
+        .phase-title .duration {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-top: 3px;
+        }
+
+        .phase-meta {
+            display: flex;
+            gap: 20px;
+        }
+
+        .phase-meta-item {
+            text-align: center;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 12px;
+        }
+
+        .phase-meta-item .value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .phase-meta-item .label {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+        }
+
+        .phase-body {
+            padding: 30px;
+        }
+
+        /* Objective */
+        .objective {
+            background: var(--gray-50);
+            padding: 20px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .objective h4 {
+            color: var(--primary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .objective p {
+            color: var(--gray-900);
+            font-size: 1.05rem;
+        }
+
+        /* Task Grid */
+        .task-section {
+            margin-bottom: 30px;
+        }
+
+        .task-section h4 {
+            font-size: 1rem;
+            color: var(--gray-900);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .task-item {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .task-item .checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--gray-300);
+            border-radius: 6px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .task-item.done .checkbox {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .task-item .task-content {
+            flex: 1;
+        }
+
+        .task-item .task-name {
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .task-item .task-desc {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        .task-item .task-owner {
+            font-size: 0.75rem;
+            color: var(--primary);
+            margin-top: 8px;
+        }
+
+        /* Day by Day */
+        .day-timeline {
+            margin-top: 25px;
+        }
+
+        .day-timeline h4 {
+            font-size: 1rem;
+            color: var(--gray-900);
+            margin-bottom: 15px;
+        }
+
+        .day-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .day-label {
+            width: 80px;
+            flex-shrink: 0;
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            padding-top: 8px;
+        }
+
+        .day-tasks {
+            flex: 1;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .day-task {
+            padding: 8px 16px;
+            background: var(--gray-100);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--gray-700);
+        }
+
+        .day-task.critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .day-task.milestone {
+            background: #d1fae5;
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        /* Deliverables */
+        .deliverables {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+
+        .deliverables h4 {
+            color: #065f46;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .deliverable-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .deliverable-item {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .deliverable-item .icon {
+            color: var(--success);
+        }
+
+        /* Acceptance Criteria */
+        .acceptance {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .acceptance h4 {
+            color: #1e40af;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .acceptance ul {
+            list-style: none;
+        }
+
+        .acceptance li {
+            padding: 8px 0;
+            font-size: 0.9rem;
+            color: #1e3a8a;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        /* Dependencies */
+        .dependencies {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fef3c7;
+            border-radius: 12px;
+        }
+
+        .dependencies h4 {
+            color: #92400e;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        .dependency-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .dependency-tag {
+            padding: 6px 14px;
+            background: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #78350f;
+        }
+
+        /* Code Snippet */
+        .code-snippet {
+            background: #1e293b;
+            border-radius: 12px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: #0f172a;
+            padding: 12px 20px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .code-body {
+            padding: 20px;
+            color: #e2e8f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        .code-body .comment { color: #64748b; }
+        .code-body .keyword { color: #c084fc; }
+        .code-body .string { color: #86efac; }
+        .code-body .function { color: #60a5fa; }
+
+        /* Milestone Summary */
+        .milestone-summary {
+            background: var(--gray-900);
+            padding: 40px 50px;
+        }
+
+        .milestone-summary h3 {
+            color: white;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .milestone-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .milestone-flow::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 40px;
+            right: 40px;
+            height: 4px;
+            background: linear-gradient(90deg, #6b7280, #3b82f6, #8b5cf6, #06b6d4, #10b981, #f59e0b, #ef4444, #ec4899, #14b8a6);
+            border-radius: 2px;
+        }
+
+        .milestone-item {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .milestone-dot {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .milestone-dot.p0 { background: #6b7280; }
+        .milestone-dot.p1 { background: #3b82f6; }
+        .milestone-dot.p2 { background: #8b5cf6; }
+        .milestone-dot.p3 { background: #06b6d4; }
+        .milestone-dot.p4 { background: #10b981; }
+        .milestone-dot.p5 { background: #f59e0b; }
+        .milestone-dot.p6 { background: #ef4444; }
+        .milestone-dot.p7 { background: #ec4899; }
+        .milestone-dot.p8 { background: #14b8a6; }
+
+        .milestone-label {
+            color: white;
+            font-size: 0.75rem;
+            max-width: 100px;
+        }
+
+        .milestone-date {
+            color: #9ca3af;
+            font-size: 0.7rem;
+            margin-top: 5px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--gray-100);
+            padding: 30px 50px;
+            text-align: center;
+            color: var(--gray-600);
+        }
+
+        @media (max-width: 768px) {
+            .task-grid { grid-template-columns: 1fr; }
+            .deliverable-list { grid-template-columns: 1fr; }
+            .phase-header { flex-direction: column; gap: 20px; }
+            .milestone-flow { flex-wrap: wrap; gap: 20px; }
+            .milestone-flow::before { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 开发阶段详细规划</h1>
+            <div class="subtitle">Sales Meeting Intelligence - 从零到上线的完整路线图</div>
+            <div class="timeline-summary">
+                <div class="timeline-item">
+                    <div class="value">9 个</div>
+                    <div class="label">开发阶段</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="value">7 周</div>
+                    <div class="label">开发周期</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="value">4-8 周</div>
+                    <div class="label">上线审核</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="value">2026-01-13</div>
+                    <div class="label">项目启动日</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase Navigation -->
+        <div class="phase-nav">
+            <div class="phase-nav-item p0">P0 环境准备</div>
+            <div class="phase-nav-item p1">P1 基础架构</div>
+            <div class="phase-nav-item p2">P2 录音转写</div>
+            <div class="phase-nav-item p3">P3 AI分析</div>
+            <div class="phase-nav-item p4">P4 文档生成</div>
+            <div class="phase-nav-item p5">P5 SF集成</div>
+            <div class="phase-nav-item p6">P6 Dashboard</div>
+            <div class="phase-nav-item p7">P7 测试打包</div>
+            <div class="phase-nav-item p8">P8 上线发布</div>
+        </div>
+
+        <div class="content">
+            <!-- Phase 0 -->
+            <div class="phase-card" id="phase0">
+                <div class="phase-header p0">
+                    <div class="phase-title">
+                        <div class="phase-number p0">P0</div>
+                        <div>
+                            <h2>环境准备与前置条件</h2>
+                            <div class="duration">Week 0 (项目启动前) | 3-5 天</div>
+                        </div>
+                    </div>
+                    <div class="phase-meta">
+                        <div class="phase-meta-item">
+                            <div class="value">5</div>
+                            <div class="label">任务数</div>
+                        </div>
+                        <div class="phase-meta-item">
+                            <div class="value">阻塞级</div>
+                            <div class="label">优先级</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="phase-body">
+                    <div class="objective">
+                        <h4>🎯 阶段目标</h4>
+                        <p>完成所有开发所需的账号、环境、工具准备，确保 Week 1 可以立即开始编码</p>
+                    </div>
+
+                    <div class="task-section">
+                        <h4>📋 核心任务</h4>
+                        <div class="task-grid">
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">购买 Salesforce 开发者账号</div>
+                                    <div class="task-desc">注册 developer.salesforce.com，获取 Developer Edition 或 Partner Developer Edition</div>
+                                    <div class="task-owner">👤 项目经理</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">注册 Partner Community</div>
+                                    <div class="task-desc">申请 Salesforce Partner 资格，获取 AppExchange 发布权限</div>
+                                    <div class="task-owner">👤 项目经理</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">配置开发环境</div>
+                                    <div class="task-desc">安装 VS Code + Salesforce Extensions + SFDX CLI</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">创建 Scratch Org</div>
+                                    <div class="task-desc">配置 project-scratch-def.json，创建开发用 Scratch Org</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">约吴总技术辅导会议</div>
+                                    <div class="task-desc">确认技术方向，获取 Salesforce 最佳实践指导</div>
+                                    <div class="task-owner">👤 项目经理</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">GBase API 接入准备</div>
+                                    <div class="task-desc">获取 GBase 测试环境 API Key，确认接口文档</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deliverables">
+                        <h4>📦 交付物</h4>
+                        <div class="deliverable-list">
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>Salesforce Developer Edition 账号</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>Partner Community 申请提交</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>开发环境就绪（VS Code + SFDX）</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>GBase API 测试账号</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acceptance">
+                        <h4>✅ 验收标准</h4>
+                        <ul>
+                            <li>☑️ 可以通过 SFDX 登录 Salesforce Org</li>
+                            <li>☑️ 可以创建和部署 Scratch Org</li>
+                            <li>☑️ GBase API 测试调用成功</li>
+                            <li>☑️ 技术辅导会议已完成，方向已确认</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 1 -->
+            <div class="phase-card" id="phase1">
+                <div class="phase-header p1">
+                    <div class="phase-title">
+                        <div class="phase-number p1">P1</div>
+                        <div>
+                            <h2>基础架构搭建</h2>
+                            <div class="duration">Week 1 | 5 个工作日</div>
+                        </div>
+                    </div>
+                    <div class="phase-meta">
+                        <div class="phase-meta-item">
+                            <div class="value">8</div>
+                            <div class="label">任务数</div>
+                        </div>
+                        <div class="phase-meta-item">
+                            <div class="value">核心</div>
+                            <div class="label">优先级</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="phase-body">
+                    <div class="objective">
+                        <h4>🎯 阶段目标</h4>
+                        <p>建立 Salesforce ↔ GBase 的基础通信架构，实现端到端连通验证</p>
+                    </div>
+
+                    <div class="task-section">
+                        <h4>📋 核心任务</h4>
+                        <div class="task-grid">
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">创建 SFDX 项目结构</div>
+                                    <div class="task-desc">初始化项目目录、配置 sfdx-project.json</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">配置 Named Credential</div>
+                                    <div class="task-desc">创建 GBase_API Named Credential，配置 OAuth 2.0</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">实现 GBaseApiService.cls</div>
+                                    <div class="task-desc">核心 Apex 类，封装 HTTP Callout 逻辑</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">定义 Platform Event</div>
+                                    <div class="task-desc">创建 GBase_Meeting_Event__e，用于异步回调通知</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">搭建 GBase API Gateway</div>
+                                    <div class="task-desc">部署 API 网关，配置路由和认证</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">实现 Webhook 端点</div>
+                                    <div class="task-desc">创建 @RestResource 处理 GBase 回调</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">创建 Custom Objects</div>
+                                    <div class="task-desc">GBase_Meeting__c、GBase_Document__c 对象定义</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">端到端测试</div>
+                                    <div class="task-desc">从 SF 发起调用 → GBase 处理 → 回调 SF 的完整流程</div>
+                                    <div class="task-owner">👤 QA</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="day-timeline">
+                        <h4>📅 每日任务分解</h4>
+                        <div class="day-row">
+                            <div class="day-label">Day 1</div>
+                            <div class="day-tasks">
+                                <div class="day-task">SFDX 项目初始化</div>
+                                <div class="day-task">Scratch Org 创建</div>
+                                <div class="day-task">Custom Objects 定义</div>
+                            </div>
+                        </div>
+                        <div class="day-row">
+                            <div class="day-label">Day 2</div>
+                            <div class="day-tasks">
+                                <div class="day-task critical">Named Credential 配置</div>
+                                <div class="day-task">Auth Provider 设置</div>
+                                <div class="day-task">Remote Site Settings</div>
+                            </div>
+                        </div>
+                        <div class="day-row">
+                            <div class="day-label">Day 3</div>
+                            <div class="day-tasks">
+                                <div class="day-task">GBaseApiService.cls 开发</div>
+                                <div class="day-task">API Gateway 部署</div>
+                            </div>
+                        </div>
+                        <div class="day-row">
+                            <div class="day-label">Day 4</div>
+                            <div class="day-tasks">
+                                <div class="day-task">Platform Event 定义</div>
+                                <div class="day-task">Webhook Handler 实现</div>
+                                <div class="day-task">Event Publisher 类</div>
+                            </div>
+                        </div>
+                        <div class="day-row">
+                            <div class="day-label">Day 5</div>
+                            <div class="day-tasks">
+                                <div class="day-task milestone">🎯 端到端集成测试</div>
+                                <div class="day-task">问题修复</div>
+                                <div class="day-task milestone">✅ P1 里程碑验收</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="code-snippet">
+                        <div class="code-header">
+                            <span>📁 force-app/main/default/classes/GBaseApiService.cls</span>
+                            <span>Apex</span>
+                        </div>
+                        <div class="code-body">
+<pre>
+<span class="keyword">public with sharing class</span> GBaseApiService {
+    <span class="keyword">private static final</span> String NAMED_CRED = <span class="string">'callout:GBase_API'</span>;
+
+    <span class="comment">// 触发会议分析</span>
+    <span class="keyword">@AuraEnabled</span>
+    <span class="keyword">public static</span> String <span class="function">triggerAnalysis</span>(String meetingId, String audioUrl) {
+        HttpRequest req = <span class="keyword">new</span> HttpRequest();
+        req.setEndpoint(NAMED_CRED + <span class="string">'/v1/meetings'</span>);
+        req.setMethod(<span class="string">'POST'</span>);
+        req.setTimeout(120000);
+        <span class="comment">// ... 实现细节</span>
+    }
+}
+</pre>
+                        </div>
+                    </div>
+
+                    <div class="deliverables">
+                        <h4>📦 交付物</h4>
+                        <div class="deliverable-list">
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>GBaseApiService.cls + Test</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>GBaseWebhookHandler.cls + Test</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>GBase_Meeting__c Object</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>Platform Event 定义</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>Named Credential 配置</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>API Gateway 部署</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acceptance">
+                        <h4>✅ 验收标准</h4>
+                        <ul>
+                            <li>☑️ 从 Salesforce 可以成功调用 GBase API</li>
+                            <li>☑️ GBase 回调可以触发 Platform Event</li>
+                            <li>☑️ Apex 测试覆盖率 ≥ 75%</li>
+                            <li>☑️ 无 PMD 安全警告</li>
+                        </ul>
+                    </div>
+
+                    <div class="dependencies">
+                        <h4>⚠️ 依赖项</h4>
+                        <div class="dependency-list">
+                            <div class="dependency-tag">P0 完成</div>
+                            <div class="dependency-tag">GBase API 文档</div>
+                            <div class="dependency-tag">SSL 证书配置</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2 -->
+            <div class="phase-card" id="phase2">
+                <div class="phase-header p2">
+                    <div class="phase-title">
+                        <div class="phase-number p2">P2</div>
+                        <div>
+                            <h2>会议录音与转写</h2>
+                            <div class="duration">Week 2 | 5 个工作日</div>
+                        </div>
+                    </div>
+                    <div class="phase-meta">
+                        <div class="phase-meta-item">
+                            <div class="value">7</div>
+                            <div class="label">任务数</div>
+                        </div>
+                        <div class="phase-meta-item">
+                            <div class="value">核心</div>
+                            <div class="label">优先级</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="phase-body">
+                    <div class="objective">
+                        <h4>🎯 阶段目标</h4>
+                        <p>实现录音文件上传、存储、语音转文字的完整流程</p>
+                    </div>
+
+                    <div class="task-section">
+                        <h4>📋 核心任务</h4>
+                        <div class="task-grid">
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">开发 gbaseMeetingUploader LWC</div>
+                                    <div class="task-desc">文件上传组件，支持拖拽、进度显示、格式验证</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">实现文件存储服务</div>
+                                    <div class="task-desc">录音文件 → S3/OSS 存储，生成预签名 URL</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">集成 Speech-to-Text</div>
+                                    <div class="task-desc">接入 Whisper / 日语 ASR 服务</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">转写结果存储</div>
+                                    <div class="task-desc">设计转写文本存储结构，支持时间戳标记</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">进度状态 UI</div>
+                                    <div class="task-desc">LWC 显示处理进度：上传中/转写中/完成</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">错误处理机制</div>
+                                    <div class="task-desc">上传失败重试、转写失败告警</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">转写结果展示</div>
+                                    <div class="task-desc">LWC 显示转写文本，支持搜索高亮</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="day-timeline">
+                        <h4>📅 每日任务分解</h4>
+                        <div class="day-row">
+                            <div class="day-label">Day 1</div>
+                            <div class="day-tasks">
+                                <div class="day-task">LWC 上传组件骨架</div>
+                                <div class="day-task">文件格式验证</div>
+                            </div>
+                        </div>
+                        <div class="day-row">
+                            <div class="day-label">Day 2</div>
+                            <div class="day-tasks">
+                                <div class="day-task">S3 存储服务</div>
+                                <div class="day-task">预签名 URL 生成</div>
+                                <div class="day-task">上传进度显示</div>
+                            </div>
+                        </div>
+                        <div class="day-row">
+                            <div class="day-label">Day 3</div>
+                            <div class="day-tasks">
+                                <div class="day-task critical">Whisper ASR 集成</div>
+                                <div class="day-task">日语模型配置</div>
+                            </div>
+                        </div>
+                        <div class="day-row">
+                            <div class="day-label">Day 4</div>
+                            <div class="day-tasks">
+                                <div class="day-task">转写结果存储</div>
+                                <div class="day-task">状态回调处理</div>
+                                <div class="day-task">错误重试机制</div>
+                            </div>
+                        </div>
+                        <div class="day-row">
+                            <div class="day-label">Day 5</div>
+                            <div class="day-tasks">
+                                <div class="day-task">转写结果展示 UI</div>
+                                <div class="day-task milestone">🎯 录音→文字 Demo</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deliverables">
+                        <h4>📦 交付物</h4>
+                        <div class="deliverable-list">
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>gbaseMeetingUploader LWC</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>文件存储服务</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>Speech-to-Text 集成</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>转写结果展示组件</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acceptance">
+                        <h4>✅ 验收标准</h4>
+                        <ul>
+                            <li>☑️ 可上传 mp3/wav/m4a 格式录音</li>
+                            <li>☑️ 45 分钟录音转写时间 < 5 分钟</li>
+                            <li>☑️ 日语转写准确率 ≥ 90%</li>
+                            <li>☑️ UI 实时显示处理进度</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 3 -->
+            <div class="phase-card" id="phase3">
+                <div class="phase-header p3">
+                    <div class="phase-title">
+                        <div class="phase-number p3">P3</div>
+                        <div>
+                            <h2>AI 分析引擎</h2>
+                            <div class="duration">Week 3 | 5 个工作日</div>
+                        </div>
+                    </div>
+                    <div class="phase-meta">
+                        <div class="phase-meta-item">
+                            <div class="value">6</div>
+                            <div class="label">任务数</div>
+                        </div>
+                        <div class="phase-meta-item">
+                            <div class="value">核心</div>
+                            <div class="label">优先级</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="phase-body">
+                    <div class="objective">
+                        <h4>🎯 阶段目标</h4>
+                        <p>从转写文本中提取结构化信息：痛点、需求、商机、跟进事项</p>
+                    </div>
+
+                    <div class="task-section">
+                        <h4>📋 核心任务</h4>
+                        <div class="task-grid">
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">设计分析 Prompt</div>
+                                    <div class="task-desc">针对日语销售对话优化的 LLM Prompt 模板</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">客户痛点提取</div>
+                                    <div class="task-desc">识别客户表达的问题、不满、挑战</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">需求要点整理</div>
+                                    <div class="task-desc">提取客户明确或隐含的需求</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">商机信息识别</div>
+                                    <div class="task-desc">预算、时间线、决策者、竞品信息</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">跟进事项生成</div>
+                                    <div class="task-desc">自动生成 Action Items 和建议跟进日期</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">分析结果 UI</div>
+                                    <div class="task-desc">LWC 展示结构化分析结果</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deliverables">
+                        <h4>📦 交付物</h4>
+                        <div class="deliverable-list">
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>AI 分析服务 API</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>结构化 JSON Schema</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>分析结果展示 LWC</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>Prompt 模板库</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acceptance">
+                        <h4>✅ 验收标准</h4>
+                        <ul>
+                            <li>☑️ 可提取 ≥ 3 个客户痛点</li>
+                            <li>☑️ 可识别预算/时间线信息</li>
+                            <li>☑️ 自动生成 ≥ 2 个跟进事项</li>
+                            <li>☑️ 分析准确率 ≥ 85%（人工校验）</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 4 -->
+            <div class="phase-card" id="phase4">
+                <div class="phase-header p4">
+                    <div class="phase-title">
+                        <div class="phase-number p4">P4</div>
+                        <div>
+                            <h2>文档生成模块</h2>
+                            <div class="duration">Week 4 | 5 个工作日</div>
+                        </div>
+                    </div>
+                    <div class="phase-meta">
+                        <div class="phase-meta-item">
+                            <div class="value">6</div>
+                            <div class="label">任务数</div>
+                        </div>
+                        <div class="phase-meta-item">
+                            <div class="value">核心</div>
+                            <div class="label">优先级</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="phase-body">
+                    <div class="objective">
+                        <h4>🎯 阶段目标</h4>
+                        <p>基于 AI 分析结果，自动生成提案书和 PPT</p>
+                    </div>
+
+                    <div class="task-section">
+                        <h4>📋 核心任务</h4>
+                        <div class="task-grid">
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">设计提案书模板</div>
+                                    <div class="task-desc">日本商务风格的提案书 Word 模板</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">提案书生成逻辑</div>
+                                    <div class="task-desc">AI 内容填充 + 模板渲染</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">设计 PPT 模板</div>
+                                    <div class="task-desc">专业商务 PPT 模板设计</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">PPT 自动生成</div>
+                                    <div class="task-desc">基于 GBase PPT 能力生成演示文稿</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">文档预览组件</div>
+                                    <div class="task-desc">LWC 在线预览提案书/PPT</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">下载/编辑功能</div>
+                                    <div class="task-desc">文档下载、在线编辑、版本记录</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deliverables">
+                        <h4>📦 交付物</h4>
+                        <div class="deliverable-list">
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>提案书模板 (3 款)</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>PPT 模板 (2 款)</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>gbaseDocumentViewer LWC</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>文档生成 API</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acceptance">
+                        <h4>✅ 验收标准</h4>
+                        <ul>
+                            <li>☑️ 提案书生成时间 < 2 分钟</li>
+                            <li>☑️ PPT 生成时间 < 1 分钟</li>
+                            <li>☑️ 文档内容与会议分析结果一致</li>
+                            <li>☑️ 支持在线预览和下载</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 5 -->
+            <div class="phase-card" id="phase5">
+                <div class="phase-header p5">
+                    <div class="phase-title">
+                        <div class="phase-number p5">P5</div>
+                        <div>
+                            <h2>Salesforce 数据集成</h2>
+                            <div class="duration">Week 5 | 5 个工作日</div>
+                        </div>
+                    </div>
+                    <div class="phase-meta">
+                        <div class="phase-meta-item">
+                            <div class="value">7</div>
+                            <div class="label">任务数</div>
+                        </div>
+                        <div class="phase-meta-item">
+                            <div class="value">核心</div>
+                            <div class="label">优先级</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="phase-body">
+                    <div class="objective">
+                        <h4>🎯 阶段目标</h4>
+                        <p>将 AI 分析结果自动同步到 Salesforce 标准对象</p>
+                    </div>
+
+                    <div class="task-section">
+                        <h4>📋 核心任务</h4>
+                        <div class="task-grid">
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">Activity 自动创建</div>
+                                    <div class="task-desc">会议结束后自动创建 Activity 记录</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">Task 生成</div>
+                                    <div class="task-desc">跟进事项 → Salesforce Task</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">Opportunity 关联</div>
+                                    <div class="task-desc">关联/创建 Opportunity，更新阶段</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">Contact 匹配</div>
+                                    <div class="task-desc">自动匹配或创建 Contact 记录</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">附件上传</div>
+                                    <div class="task-desc">生成的提案书/PPT 作为附件上传</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">字段映射配置</div>
+                                    <div class="task-desc">可配置的字段映射规则</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">同步日志</div>
+                                    <div class="task-desc">记录同步历史，支持问题追踪</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deliverables">
+                        <h4>📦 交付物</h4>
+                        <div class="deliverable-list">
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>GBaseSyncService.cls</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>GBaseFieldMapper.cls</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>字段映射配置 UI</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>同步日志 Object</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acceptance">
+                        <h4>✅ 验收标准</h4>
+                        <ul>
+                            <li>☑️ 会议分析完成后自动创建 Activity</li>
+                            <li>☑️ 跟进事项自动转为 Task</li>
+                            <li>☑️ 可关联到正确的 Opportunity</li>
+                            <li>☑️ 文档附件正确上传</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 6 -->
+            <div class="phase-card" id="phase6">
+                <div class="phase-header p6">
+                    <div class="phase-title">
+                        <div class="phase-number p6">P6</div>
+                        <div>
+                            <h2>UI Dashboard 开发</h2>
+                            <div class="duration">Week 6 | 5 个工作日</div>
+                        </div>
+                    </div>
+                    <div class="phase-meta">
+                        <div class="phase-meta-item">
+                            <div class="value">7</div>
+                            <div class="label">任务数</div>
+                        </div>
+                        <div class="phase-meta-item">
+                            <div class="value">核心</div>
+                            <div class="label">优先级</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="phase-body">
+                    <div class="objective">
+                        <h4>🎯 阶段目标</h4>
+                        <p>完成用户界面开发，提供完整的使用体验</p>
+                    </div>
+
+                    <div class="task-section">
+                        <h4>📋 核心任务</h4>
+                        <div class="task-grid">
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">会议列表视图</div>
+                                    <div class="task-desc">gbaseMeetingList LWC，支持排序、筛选</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">会议详情页</div>
+                                    <div class="task-desc">gbaseMeetingDetail LWC，集成所有功能</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">统计仪表板</div>
+                                    <div class="task-desc">gbaseDashboard LWC，图表展示</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">设置页面</div>
+                                    <div class="task-desc">gbaseSettings LWC，配置项管理</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">Lightning App 创建</div>
+                                    <div class="task-desc">GBase Meetings App + 导航配置</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">用户引导流程</div>
+                                    <div class="task-desc">新用户 Onboarding 流程</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">响应式适配</div>
+                                    <div class="task-desc">Mobile 和 Desktop 适配</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deliverables">
+                        <h4>📦 交付物</h4>
+                        <div class="deliverable-list">
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>6 个 LWC 组件</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>GBase Meetings App</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>FlexiPage 配置</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>Permission Set</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acceptance">
+                        <h4>✅ 验收标准</h4>
+                        <ul>
+                            <li>☑️ 用户可以完成完整工作流程</li>
+                            <li>☑️ UI 响应式，支持移动端</li>
+                            <li>☑️ 操作流畅，无明显卡顿</li>
+                            <li>☑️ 错误提示友好</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 7 -->
+            <div class="phase-card" id="phase7">
+                <div class="phase-header p7">
+                    <div class="phase-title">
+                        <div class="phase-number p7">P7</div>
+                        <div>
+                            <h2>测试与打包</h2>
+                            <div class="duration">Week 7 | 5 个工作日</div>
+                        </div>
+                    </div>
+                    <div class="phase-meta">
+                        <div class="phase-meta-item">
+                            <div class="value">8</div>
+                            <div class="label">任务数</div>
+                        </div>
+                        <div class="phase-meta-item">
+                            <div class="value">核心</div>
+                            <div class="label">优先级</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="phase-body">
+                    <div class="objective">
+                        <h4>🎯 阶段目标</h4>
+                        <p>完成质量保证、安全扫描、打包发布准备</p>
+                    </div>
+
+                    <div class="task-section">
+                        <h4>📋 核心任务</h4>
+                        <div class="task-grid">
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">Apex 单元测试</div>
+                                    <div class="task-desc">确保覆盖率 ≥ 75%</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">集成测试</div>
+                                    <div class="task-desc">端到端流程测试</div>
+                                    <div class="task-owner">👤 QA</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">PMD 安全扫描</div>
+                                    <div class="task-desc">修复所有 Critical/High 问题</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">Checkmarx 扫描</div>
+                                    <div class="task-desc">静态代码安全分析</div>
+                                    <div class="task-owner">👤 QA</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">性能测试</div>
+                                    <div class="task-desc">大文件处理、并发测试</div>
+                                    <div class="task-owner">👤 QA</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">2GP Package 创建</div>
+                                    <div class="task-desc">创建 Managed Package</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">安装/升级脚本</div>
+                                    <div class="task-desc">Post-install 脚本、升级迁移</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">用户文档</div>
+                                    <div class="task-desc">安装指南、用户手册</div>
+                                    <div class="task-owner">👤 项目经理</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deliverables">
+                        <h4>📦 交付物</h4>
+                        <div class="deliverable-list">
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>测试报告</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>安全扫描报告</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>2GP Managed Package</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>用户文档</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acceptance">
+                        <h4>✅ 验收标准</h4>
+                        <ul>
+                            <li>☑️ Apex 测试覆盖率 ≥ 75%</li>
+                            <li>☑️ 无 Critical/High 安全问题</li>
+                            <li>☑️ Package 可成功安装</li>
+                            <li>☑️ 文档完整</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 8 -->
+            <div class="phase-card" id="phase8">
+                <div class="phase-header p8">
+                    <div class="phase-title">
+                        <div class="phase-number p8">P8</div>
+                        <div>
+                            <h2>上线与发布</h2>
+                            <div class="duration">Week 8-15 | 4-8 周</div>
+                        </div>
+                    </div>
+                    <div class="phase-meta">
+                        <div class="phase-meta-item">
+                            <div class="value">6</div>
+                            <div class="label">任务数</div>
+                        </div>
+                        <div class="phase-meta-item">
+                            <div class="value">关键</div>
+                            <div class="label">优先级</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="phase-body">
+                    <div class="objective">
+                        <h4>🎯 阶段目标</h4>
+                        <p>通过 AppExchange Security Review，正式上线</p>
+                    </div>
+
+                    <div class="task-section">
+                        <h4>📋 核心任务</h4>
+                        <div class="task-grid">
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">提交 Security Review</div>
+                                    <div class="task-desc">准备材料、提交审核申请</div>
+                                    <div class="task-owner">👤 项目经理</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">问题修复</div>
+                                    <div class="task-desc">根据审核反馈修复问题</div>
+                                    <div class="task-owner">👤 SF 开发</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">AppExchange Listing</div>
+                                    <div class="task-desc">产品页面、截图、描述</div>
+                                    <div class="task-owner">👤 项目经理</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">Alpha 测试</div>
+                                    <div class="task-desc">5 家客户试用</div>
+                                    <div class="task-owner">👤 QA</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">正式发布</div>
+                                    <div class="task-desc">AppExchange 上线</div>
+                                    <div class="task-owner">👤 项目经理</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="checkbox">☐</div>
+                                <div class="task-content">
+                                    <div class="task-name">运营监控</div>
+                                    <div class="task-desc">建立监控告警体系</div>
+                                    <div class="task-owner">👤 后端开发</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deliverables">
+                        <h4>📦 交付物</h4>
+                        <div class="deliverable-list">
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>Security Review 通过</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>AppExchange 产品页面</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>Alpha 测试报告</span>
+                            </div>
+                            <div class="deliverable-item">
+                                <span class="icon">✓</span>
+                                <span>监控 Dashboard</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acceptance">
+                        <h4>✅ 验收标准</h4>
+                        <ul>
+                            <li>☑️ Security Review 通过</li>
+                            <li>☑️ AppExchange 可搜索到产品</li>
+                            <li>☑️ Alpha 用户满意度 ≥ 4/5</li>
+                            <li>☑️ 监控告警正常运行</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Milestone Summary -->
+        <div class="milestone-summary">
+            <h3>🎯 里程碑总览</h3>
+            <div class="milestone-flow">
+                <div class="milestone-item">
+                    <div class="milestone-dot p0">P0</div>
+                    <div class="milestone-label">环境准备</div>
+                    <div class="milestone-date">1/10</div>
+                </div>
+                <div class="milestone-item">
+                    <div class="milestone-dot p1">P1</div>
+                    <div class="milestone-label">架构搭建</div>
+                    <div class="milestone-date">1/17</div>
+                </div>
+                <div class="milestone-item">
+                    <div class="milestone-dot p2">P2</div>
+                    <div class="milestone-label">录音转写</div>
+                    <div class="milestone-date">1/24</div>
+                </div>
+                <div class="milestone-item">
+                    <div class="milestone-dot p3">P3</div>
+                    <div class="milestone-label">AI分析</div>
+                    <div class="milestone-date">1/31</div>
+                </div>
+                <div class="milestone-item">
+                    <div class="milestone-dot p4">P4</div>
+                    <div class="milestone-label">文档生成</div>
+                    <div class="milestone-date">2/7</div>
+                </div>
+                <div class="milestone-item">
+                    <div class="milestone-dot p5">P5</div>
+                    <div class="milestone-label">SF集成</div>
+                    <div class="milestone-date">2/14</div>
+                </div>
+                <div class="milestone-item">
+                    <div class="milestone-dot p6">P6</div>
+                    <div class="milestone-label">Dashboard</div>
+                    <div class="milestone-date">2/21</div>
+                </div>
+                <div class="milestone-item">
+                    <div class="milestone-dot p7">P7</div>
+                    <div class="milestone-label">测试打包</div>
+                    <div class="milestone-date">2/28</div>
+                </div>
+                <div class="milestone-item">
+                    <div class="milestone-dot p8">P8</div>
+                    <div class="milestone-label">上线</div>
+                    <div class="milestone-date">4/14</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Sales Meeting Intelligence - 开发阶段详细规划 v1.0 | 2026-01-10
+        </div>
+    </div>
+</body>
+</html>

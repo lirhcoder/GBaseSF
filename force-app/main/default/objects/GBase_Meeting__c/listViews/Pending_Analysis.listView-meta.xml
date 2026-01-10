@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pending_Analysis</fullName>
+    <label>Pending Analysis</label>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>New,Transcribing,Analyzing</value>
+    </filters>
+    <columns>NAME</columns>
+    <columns>Meeting_Title__c</columns>
+    <columns>Meeting_Date__c</columns>
+    <columns>Status__c</columns>
+    <columns>Audio_URL__c</columns>
+    <columns>CREATED_DATE</columns>
+</ListView>

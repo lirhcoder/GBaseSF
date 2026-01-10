@@ -1,0 +1,2249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBase x Salesforce 全链路开发计划 - 混合架构</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --sf-blue: #0176D3;
+            --sf-dark: #014486;
+            --gbase-purple: #7C3AED;
+            --gbase-dark: #5B21B6;
+            --success: #2E844A;
+            --warning: #DD7A01;
+            --danger: #C23934;
+            --bg-light: #F3F3F3;
+            --border: #DDDBDA;
+        }
+
+        body {
+            font-family: 'Salesforce Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e3a5f 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 30px 100px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--sf-blue) 0%, var(--gbase-purple) 50%, var(--gbase-dark) 100%);
+            color: white;
+            padding: 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .header .logo-box {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            margin-bottom: 20px;
+        }
+
+        .header .meta {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            font-size: 0.95rem;
+            opacity: 0.85;
+        }
+
+        /* Executive Summary */
+        .exec-summary {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 50px 60px;
+            border-bottom: 3px solid var(--sf-blue);
+        }
+
+        .exec-summary h2 {
+            color: var(--sf-dark);
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .exec-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+
+        .exec-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .exec-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .exec-card .label {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .exec-card .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--sf-dark);
+        }
+
+        .exec-card .note {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 8px;
+        }
+
+        /* Content */
+        .content {
+            padding: 60px;
+        }
+
+        .section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--sf-dark);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--sf-blue);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-number {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--sf-blue) 0%, var(--gbase-purple) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Product Flow */
+        .product-flow {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+        }
+
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .flow-step {
+            flex: 1;
+            min-width: 150px;
+            background: white;
+            border-radius: 16px;
+            padding: 25px 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        .flow-step.highlight {
+            background: linear-gradient(135deg, var(--gbase-purple) 0%, var(--gbase-dark) 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .flow-step .step-num {
+            width: 28px;
+            height: 28px;
+            background: var(--sf-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin: 0 auto 12px;
+        }
+
+        .flow-step.highlight .step-num {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .flow-step .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .flow-step .title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .flow-step .tech {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 8px;
+        }
+
+        .flow-arrow {
+            font-size: 1.5rem;
+            color: var(--gbase-purple);
+        }
+
+        /* Architecture Diagram */
+        .arch-diagram {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 50px;
+            margin: 30px 0;
+        }
+
+        .arch-layers {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .arch-layer {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .layer-label {
+            width: 150px;
+            color: white;
+            font-weight: 600;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+
+        .layer-content {
+            flex: 1;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .arch-box {
+            padding: 20px 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .arch-box.sf {
+            background: linear-gradient(135deg, var(--sf-blue) 0%, var(--sf-dark) 100%);
+        }
+
+        .arch-box.gbase {
+            background: linear-gradient(135deg, var(--gbase-purple) 0%, var(--gbase-dark) 100%);
+        }
+
+        .arch-box.api {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+
+        .arch-box.infra {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        .arch-box .box-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .arch-box .box-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .arch-box .box-tech {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .arch-connector {
+            display: flex;
+            justify-content: center;
+            color: #666;
+            padding: 10px 0;
+        }
+
+        /* Timeline */
+        .timeline-container {
+            position: relative;
+            padding: 30px 0;
+        }
+
+        .timeline {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+
+        .week-card {
+            flex: 0 0 280px;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .week-header {
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .week-header.w1 { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
+        .week-header.w2 { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+        .week-header.w3 { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .week-header.w4 { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .week-header.w5 { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .week-header.w6 { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+        .week-header.w7 { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+
+        .week-header .week-num {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .week-header .week-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        .week-body {
+            padding: 20px;
+        }
+
+        .week-body .focus-area {
+            font-size: 0.8rem;
+            color: var(--sf-blue);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .task-list li:last-child {
+            border-bottom: none;
+        }
+
+        .task-list .task-icon {
+            color: var(--success);
+        }
+
+        .week-footer {
+            background: #f9f9f9;
+            padding: 15px 20px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .week-footer .deliverable {
+            font-weight: 600;
+            color: var(--sf-dark);
+        }
+
+        /* API Design */
+        .api-section {
+            background: #1e293b;
+            border-radius: 16px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+
+        .api-header {
+            background: #0f172a;
+            padding: 20px 30px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .api-header h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .api-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .api-badge.post { background: #22c55e; }
+        .api-badge.get { background: #3b82f6; }
+        .api-badge.ws { background: #a855f7; }
+
+        .api-body {
+            padding: 25px 30px;
+        }
+
+        .api-endpoint {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .api-endpoint .method-path {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .api-endpoint .path {
+            color: #94a3b8;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        .api-endpoint .desc {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        /* Component Grid */
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .component-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .component-header {
+            padding: 20px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .component-header.sf {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        }
+
+        .component-header.gbase {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        }
+
+        .component-header h4 {
+            font-size: 1rem;
+            color: var(--sf-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .component-body {
+            padding: 25px;
+        }
+
+        .component-body ul {
+            list-style: none;
+        }
+
+        .component-body li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .component-body li:last-child {
+            border-bottom: none;
+        }
+
+        .component-body .file-name {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--sf-blue);
+        }
+
+        .component-body .file-desc {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Team Section */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .team-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .team-card .role-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .team-card .role-title {
+            font-weight: 700;
+            color: var(--sf-dark);
+            margin-bottom: 5px;
+        }
+
+        .team-card .role-count {
+            font-size: 0.85rem;
+            color: var(--gbase-purple);
+            margin-bottom: 15px;
+        }
+
+        .team-card .responsibilities {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: left;
+        }
+
+        .team-card .responsibilities li {
+            padding: 5px 0;
+        }
+
+        /* Security Review */
+        .security-timeline {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .security-phases {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .security-phase {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .security-phase .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .security-phase .phase-num {
+            width: 28px;
+            height: 28px;
+            background: var(--danger);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .security-phase .phase-title {
+            font-weight: 600;
+            color: var(--danger);
+        }
+
+        .security-phase .phase-duration {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .security-phase ul {
+            font-size: 0.85rem;
+            color: #444;
+            padding-left: 20px;
+        }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .metric-card.primary {
+            border-color: var(--sf-blue);
+            background: linear-gradient(135deg, #f0f9ff 0%, white 100%);
+        }
+
+        .metric-card .metric-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .metric-card .metric-label {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .metric-card .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--sf-dark);
+        }
+
+        .metric-card .metric-target {
+            font-size: 0.85rem;
+            color: var(--success);
+            margin-top: 8px;
+        }
+
+        /* Risk Matrix */
+        .risk-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+
+        .risk-table th {
+            background: linear-gradient(135deg, var(--sf-blue) 0%, var(--gbase-purple) 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .risk-table td {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .risk-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .risk-badge.high { background: #fee2e2; color: #991b1b; }
+        .risk-badge.medium { background: #fef3c7; color: #92400e; }
+        .risk-badge.low { background: #d1fae5; color: #065f46; }
+
+        /* Go Live Timeline */
+        .golive-timeline {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-radius: 16px;
+            padding: 40px;
+            margin: 30px 0;
+        }
+
+        .golive-phases {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .golive-phases::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 50px;
+            right: 50px;
+            height: 4px;
+            background: var(--success);
+        }
+
+        .golive-phase {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .golive-phase .phase-circle {
+            width: 60px;
+            height: 60px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .golive-phase .phase-name {
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 5px;
+        }
+
+        .golive-phase .phase-date {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* Action Items */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .action-card {
+            background: white;
+            border-left: 5px solid;
+            border-radius: 0 12px 12px 0;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .action-card.urgent { border-color: var(--danger); }
+        .action-card.this-week { border-color: var(--warning); }
+        .action-card.next-week { border-color: var(--sf-blue); }
+        .action-card.ongoing { border-color: var(--success); }
+
+        .action-card .action-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .action-card .action-title {
+            font-weight: 700;
+            color: var(--sf-dark);
+        }
+
+        .action-card .action-timeline {
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .action-card.urgent .action-timeline { background: #fee2e2; color: #991b1b; }
+        .action-card.this-week .action-timeline { background: #fef3c7; color: #92400e; }
+        .action-card.next-week .action-timeline { background: #dbeafe; color: #1e40af; }
+        .action-card.ongoing .action-timeline { background: #d1fae5; color: #065f46; }
+
+        .action-card .action-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 40px 60px;
+            text-align: center;
+        }
+
+        .footer .version {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .footer .copyright {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .exec-grid { grid-template-columns: repeat(2, 1fr); }
+            .team-grid { grid-template-columns: repeat(2, 1fr); }
+            .metrics-grid { grid-template-columns: 1fr; }
+            .component-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .header { padding: 40px 20px; }
+            .content { padding: 30px 20px; }
+            .exec-grid { grid-template-columns: 1fr; }
+            .flow-container { flex-direction: column; }
+            .flow-arrow { transform: rotate(90deg); }
+            .arch-layer { flex-direction: column; }
+            .layer-label { text-align: center; width: 100%; }
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #0f172a;
+            padding: 12px 20px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .code-body {
+            padding: 20px;
+            color: #e2e8f0;
+            font-family: 'Fira Code', 'Monaco', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .code-body .keyword { color: #c084fc; }
+        .code-body .string { color: #86efac; }
+        .code-body .comment { color: #64748b; }
+        .code-body .function { color: #60a5fa; }
+        .code-body .type { color: #fbbf24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logos">
+                    <div class="logo-box">Salesforce</div>
+                    <span style="font-size: 2rem;">+</span>
+                    <div class="logo-box">GBase AI</div>
+                </div>
+                <h1>Sales Meeting Intelligence</h1>
+                <div class="subtitle">全链路混合架构开发计划</div>
+                <div class="meta">
+                    <span>项目代号: SMI-2026-01</span>
+                    <span>版本: v1.0</span>
+                    <span>日期: 2026-01-10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Executive Summary -->
+        <div class="exec-summary">
+            <h2>📊 执行摘要</h2>
+            <div class="exec-grid">
+                <div class="exec-card">
+                    <div class="icon">📅</div>
+                    <div class="label">开发周期</div>
+                    <div class="value">7 周</div>
+                    <div class="note">+ Security Review 4-8周</div>
+                </div>
+                <div class="exec-card">
+                    <div class="icon">👥</div>
+                    <div class="label">团队规模</div>
+                    <div class="value">3-4 人</div>
+                    <div class="note">Backend + SF Dev + QA</div>
+                </div>
+                <div class="exec-card">
+                    <div class="icon">🎯</div>
+                    <div class="label">核心场景</div>
+                    <div class="value">营业会议</div>
+                    <div class="note">录音 → 分析 → 提案 → SF</div>
+                </div>
+                <div class="exec-card">
+                    <div class="icon">💰</div>
+                    <div class="label">目标定价</div>
+                    <div class="value">$50/月</div>
+                    <div class="note">每用户/月</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Section 1: Product Definition -->
+            <div class="section">
+                <h3 class="section-title">
+                    <span class="section-number">1</span>
+                    产品定义与用户流程
+                </h3>
+
+                <div class="product-flow">
+                    <h4 style="text-align: center; color: var(--gbase-dark); margin-bottom: 30px;">用户旅程 - 从会议到 Salesforce</h4>
+                    <div class="flow-container">
+                        <div class="flow-step">
+                            <div class="step-num">1</div>
+                            <div class="icon">🎙️</div>
+                            <div class="title">会议录音</div>
+                            <div class="tech">Zoom/Teams/Meet</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-num">2</div>
+                            <div class="icon">📝</div>
+                            <div class="title">AI 转写</div>
+                            <div class="tech">Speech-to-Text</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step highlight">
+                            <div class="step-num">3</div>
+                            <div class="icon">🧠</div>
+                            <div class="title">结构化提取</div>
+                            <div class="tech">GBase AI Engine</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step highlight">
+                            <div class="step-num">4</div>
+                            <div class="icon">📄</div>
+                            <div class="title">提案书生成</div>
+                            <div class="tech">GBase Document</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step highlight">
+                            <div class="step-num">5</div>
+                            <div class="icon">📊</div>
+                            <div class="title">PPT 生成</div>
+                            <div class="tech">GBase PPT</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-num">6</div>
+                            <div class="icon">☁️</div>
+                            <div class="title">Salesforce 同步</div>
+                            <div class="tech">Activity/Opportunity</div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; margin-top: 25px; color: var(--gbase-dark); font-weight: 600;">
+                        🟣 紫色高亮 = GBase 核心价值区 (市场空白点)
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px;">
+                    <div style="background: #f0fdf4; padding: 25px; border-radius: 12px; border-left: 4px solid var(--success);">
+                        <h4 style="color: var(--success); margin-bottom: 10px;">✅ 核心功能 (MVP)</h4>
+                        <ul style="color: #666; font-size: 0.9rem; padding-left: 18px;">
+                            <li>会议录音上传/导入</li>
+                            <li>AI 转写 + 结构化提取</li>
+                            <li>自动提案书生成</li>
+                            <li>PPT 一键生成</li>
+                            <li>Salesforce Activity 同步</li>
+                        </ul>
+                    </div>
+                    <div style="background: #fef3c7; padding: 25px; border-radius: 12px; border-left: 4px solid var(--warning);">
+                        <h4 style="color: #92400e; margin-bottom: 10px;">🔶 扩展功能 (v1.1)</h4>
+                        <ul style="color: #666; font-size: 0.9rem; padding-left: 18px;">
+                            <li>实时会议接入 (Zoom API)</li>
+                            <li>多人角色识别</li>
+                            <li>竞品情报提取</li>
+                            <li>Opportunity 自动更新</li>
+                            <li>团队 Dashboard</li>
+                        </ul>
+                    </div>
+                    <div style="background: #f0f9ff; padding: 25px; border-radius: 12px; border-left: 4px solid var(--sf-blue);">
+                        <h4 style="color: var(--sf-dark); margin-bottom: 10px;">🔵 远期功能 (v2.0)</h4>
+                        <ul style="color: #666; font-size: 0.9rem; padding-left: 18px;">
+                            <li>Einstein AI 集成</li>
+                            <li>预测性洞察</li>
+                            <li>Deal Room 协作</li>
+                            <li>多语言支持</li>
+                            <li>私有化部署选项</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Architecture -->
+            <div class="section">
+                <h3 class="section-title">
+                    <span class="section-number">2</span>
+                    混合架构设计
+                </h3>
+
+                <div style="background: #fef3c7; padding: 20px 25px; border-radius: 12px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
+                    <span style="font-size: 1.5rem;">⚠️</span>
+                    <div>
+                        <strong style="color: #92400e;">为什么必须混合架构？</strong>
+                        <p style="color: #78350f; font-size: 0.9rem; margin-top: 5px;">
+                            Salesforce Governor Limits 限制：Callout 超时 120秒，AI 处理需要 2-10 分钟。
+                            所有成功的 AI 类 AppExchange 应用 (bellSalesAI, JamRoll, Gong, Conga) 均采用此模式。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="arch-diagram">
+                    <div class="arch-layers">
+                        <div class="arch-layer">
+                            <div class="layer-label">用户界面层</div>
+                            <div class="layer-content">
+                                <div class="arch-box sf">
+                                    <div class="box-icon">🖥️</div>
+                                    <div class="box-title">LWC Dashboard</div>
+                                    <div class="box-tech">Lightning Web Components</div>
+                                </div>
+                                <div class="arch-box sf">
+                                    <div class="box-icon">📱</div>
+                                    <div class="box-title">Mobile App</div>
+                                    <div class="box-tech">SF Mobile SDK</div>
+                                </div>
+                                <div class="arch-box sf">
+                                    <div class="box-icon">🔔</div>
+                                    <div class="box-title">通知组件</div>
+                                    <div class="box-tech">Platform Events</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="arch-connector">
+                            <span style="font-size: 1.5rem;">↕️</span>
+                            <span style="margin-left: 10px; color: #94a3b8;">Apex Callout (Named Credential)</span>
+                        </div>
+
+                        <div class="arch-layer">
+                            <div class="layer-label">API 网关层</div>
+                            <div class="layer-content">
+                                <div class="arch-box api">
+                                    <div class="box-icon">🔐</div>
+                                    <div class="box-title">Auth Service</div>
+                                    <div class="box-tech">OAuth 2.0 / JWT</div>
+                                </div>
+                                <div class="arch-box api">
+                                    <div class="box-icon">🌐</div>
+                                    <div class="box-title">API Gateway</div>
+                                    <div class="box-tech">Rate Limit / Routing</div>
+                                </div>
+                                <div class="arch-box api">
+                                    <div class="box-icon">📨</div>
+                                    <div class="box-title">Webhook Handler</div>
+                                    <div class="box-tech">Callback → Platform Events</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="arch-connector">
+                            <span style="font-size: 1.5rem;">↕️</span>
+                            <span style="margin-left: 10px; color: #94a3b8;">Internal Service Bus</span>
+                        </div>
+
+                        <div class="arch-layer">
+                            <div class="layer-label">GBase 核心层</div>
+                            <div class="layer-content">
+                                <div class="arch-box gbase">
+                                    <div class="box-icon">🎙️</div>
+                                    <div class="box-title">Speech Engine</div>
+                                    <div class="box-tech">Whisper / 日语 ASR</div>
+                                </div>
+                                <div class="arch-box gbase">
+                                    <div class="box-icon">🧠</div>
+                                    <div class="box-title">Analysis Engine</div>
+                                    <div class="box-tech">LLM + 结构化提取</div>
+                                </div>
+                                <div class="arch-box gbase">
+                                    <div class="box-icon">📄</div>
+                                    <div class="box-title">Document Generator</div>
+                                    <div class="box-tech">提案书 / PPT</div>
+                                </div>
+                                <div class="arch-box gbase">
+                                    <div class="box-icon">📚</div>
+                                    <div class="box-title">Knowledge RAG</div>
+                                    <div class="box-tech">企业知识库增强</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="arch-connector">
+                            <span style="font-size: 1.5rem;">↕️</span>
+                            <span style="margin-left: 10px; color: #94a3b8;">Storage Layer</span>
+                        </div>
+
+                        <div class="arch-layer">
+                            <div class="layer-label">基础设施层</div>
+                            <div class="layer-content">
+                                <div class="arch-box infra">
+                                    <div class="box-icon">💾</div>
+                                    <div class="box-title">Object Storage</div>
+                                    <div class="box-tech">S3 / 录音文件</div>
+                                </div>
+                                <div class="arch-box infra">
+                                    <div class="box-icon">🗃️</div>
+                                    <div class="box-title">Database</div>
+                                    <div class="box-tech">PostgreSQL / 元数据</div>
+                                </div>
+                                <div class="arch-box infra">
+                                    <div class="box-icon">🔍</div>
+                                    <div class="box-title">Vector DB</div>
+                                    <div class="box-tech">知识检索</div>
+                                </div>
+                                <div class="arch-box infra">
+                                    <div class="box-icon">📊</div>
+                                    <div class="box-title">Queue</div>
+                                    <div class="box-tech">任务队列</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Flow -->
+                <h4 style="color: var(--sf-dark); margin: 30px 0 20px;">关键数据流</h4>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>🔄 异步处理流程</span>
+                        <span>Sequence Diagram</span>
+                    </div>
+                    <div class="code-body">
+<pre>
+User (SF)         LWC            Apex           GBase API        GBase Worker
+    |              |              |                |                  |
+    |--[1. 上传录音]-->|              |                |                  |
+    |              |--[2. triggerAnalysis()]-->|     |                  |
+    |              |              |--[3. POST /meetings]-->|            |
+    |              |              |<--[4. 202 + jobId]--|               |
+    |              |<--[5. 返回 jobId]--|              |                  |
+    |              |              |                |--[6. 异步处理]-->|
+    |              |              |                |                  |
+    |              |              |                |  (2-5 分钟处理)   |
+    |              |              |                |                  |
+    |              |              |<--[7. Webhook callback]--|         |
+    |              |              |                |                  |
+    |              |<--[8. Platform Event]--|      |                  |
+    |<--[9. 通知完成]--|              |                |                  |
+    |              |              |                |                  |
+    |--[10. 查看结果]-->|--[11. getResults()]-->|     |                  |
+    |              |              |--[12. GET /meetings/{id}]-->|      |
+    |              |<--[13. 返回分析结果]--|           |                  |
+</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Development Timeline -->
+            <div class="section">
+                <h3 class="section-title">
+                    <span class="section-number">3</span>
+                    开发时间线 (7 周)
+                </h3>
+
+                <div class="timeline-container">
+                    <div class="timeline">
+                        <!-- Week 1 -->
+                        <div class="week-card">
+                            <div class="week-header w1">
+                                <div class="week-num">WEEK 1</div>
+                                <div class="week-title">基础架构搭建</div>
+                            </div>
+                            <div class="week-body">
+                                <div class="focus-area">🎯 Focus: 环境 + API 骨架</div>
+                                <ul class="task-list">
+                                    <li><span class="task-icon">✓</span> SF 开发环境配置 (Scratch Org)</li>
+                                    <li><span class="task-icon">✓</span> Named Credential 配置</li>
+                                    <li><span class="task-icon">✓</span> GBase API Gateway 搭建</li>
+                                    <li><span class="task-icon">✓</span> OAuth 2.0 认证流程</li>
+                                    <li><span class="task-icon">✓</span> Platform Event 定义</li>
+                                    <li><span class="task-icon">✓</span> 基础 Apex Service 类</li>
+                                </ul>
+                            </div>
+                            <div class="week-footer">
+                                <div class="deliverable">✅ Deliverable: 端到端连通验证</div>
+                            </div>
+                        </div>
+
+                        <!-- Week 2 -->
+                        <div class="week-card">
+                            <div class="week-header w2">
+                                <div class="week-num">WEEK 2</div>
+                                <div class="week-title">会议录音处理</div>
+                            </div>
+                            <div class="week-body">
+                                <div class="focus-area">🎯 Focus: 录音上传 + 转写</div>
+                                <ul class="task-list">
+                                    <li><span class="task-icon">✓</span> LWC 文件上传组件</li>
+                                    <li><span class="task-icon">✓</span> 录音文件 → S3 存储</li>
+                                    <li><span class="task-icon">✓</span> Speech-to-Text 集成</li>
+                                    <li><span class="task-icon">✓</span> 转写结果存储</li>
+                                    <li><span class="task-icon">✓</span> 进度状态 UI 展示</li>
+                                    <li><span class="task-icon">✓</span> 错误处理 + 重试机制</li>
+                                </ul>
+                            </div>
+                            <div class="week-footer">
+                                <div class="deliverable">✅ Deliverable: 录音转文字功能</div>
+                            </div>
+                        </div>
+
+                        <!-- Week 3 -->
+                        <div class="week-card">
+                            <div class="week-header w3">
+                                <div class="week-num">WEEK 3</div>
+                                <div class="week-title">AI 分析引擎</div>
+                            </div>
+                            <div class="week-body">
+                                <div class="focus-area">🎯 Focus: 结构化提取</div>
+                                <ul class="task-list">
+                                    <li><span class="task-icon">✓</span> 会议要点提取 (Action Items)</li>
+                                    <li><span class="task-icon">✓</span> 参与者角色识别</li>
+                                    <li><span class="task-icon">✓</span> 关键决策点提取</li>
+                                    <li><span class="task-icon">✓</span> 客户需求/痛点识别</li>
+                                    <li><span class="task-icon">✓</span> 后续跟进事项整理</li>
+                                    <li><span class="task-icon">✓</span> 结构化 JSON 输出</li>
+                                </ul>
+                            </div>
+                            <div class="week-footer">
+                                <div class="deliverable">✅ Deliverable: 结构化分析结果</div>
+                            </div>
+                        </div>
+
+                        <!-- Week 4 -->
+                        <div class="week-card">
+                            <div class="week-header w4">
+                                <div class="week-num">WEEK 4</div>
+                                <div class="week-title">文档生成模块</div>
+                            </div>
+                            <div class="week-body">
+                                <div class="focus-area">🎯 Focus: 提案书 + PPT</div>
+                                <ul class="task-list">
+                                    <li><span class="task-icon">✓</span> 提案书模板设计</li>
+                                    <li><span class="task-icon">✓</span> AI 内容填充逻辑</li>
+                                    <li><span class="task-icon">✓</span> PPT 自动生成</li>
+                                    <li><span class="task-icon">✓</span> 文档预览组件 (LWC)</li>
+                                    <li><span class="task-icon">✓</span> 下载/编辑功能</li>
+                                    <li><span class="task-icon">✓</span> 版本历史记录</li>
+                                </ul>
+                            </div>
+                            <div class="week-footer">
+                                <div class="deliverable">✅ Deliverable: 一键生成提案/PPT</div>
+                            </div>
+                        </div>
+
+                        <!-- Week 5 -->
+                        <div class="week-card">
+                            <div class="week-header w5">
+                                <div class="week-num">WEEK 5</div>
+                                <div class="week-title">Salesforce 集成</div>
+                            </div>
+                            <div class="week-body">
+                                <div class="focus-area">🎯 Focus: SF 数据同步</div>
+                                <ul class="task-list">
+                                    <li><span class="task-icon">✓</span> Activity 自动创建</li>
+                                    <li><span class="task-icon">✓</span> Task 生成 (跟进事项)</li>
+                                    <li><span class="task-icon">✓</span> Opportunity 关联</li>
+                                    <li><span class="task-icon">✓</span> Contact 匹配/创建</li>
+                                    <li><span class="task-icon">✓</span> 附件上传到 SF</li>
+                                    <li><span class="task-icon">✓</span> 字段映射配置 UI</li>
+                                </ul>
+                            </div>
+                            <div class="week-footer">
+                                <div class="deliverable">✅ Deliverable: 完整 SF 集成</div>
+                            </div>
+                        </div>
+
+                        <!-- Week 6 -->
+                        <div class="week-card">
+                            <div class="week-header w6">
+                                <div class="week-num">WEEK 6</div>
+                                <div class="week-title">UI Dashboard</div>
+                            </div>
+                            <div class="week-body">
+                                <div class="focus-area">🎯 Focus: 用户体验</div>
+                                <ul class="task-list">
+                                    <li><span class="task-icon">✓</span> 会议列表视图</li>
+                                    <li><span class="task-icon">✓</span> 详情页面设计</li>
+                                    <li><span class="task-icon">✓</span> 搜索/过滤功能</li>
+                                    <li><span class="task-icon">✓</span> 统计仪表板</li>
+                                    <li><span class="task-icon">✓</span> 设置/配置页面</li>
+                                    <li><span class="task-icon">✓</span> 用户引导流程</li>
+                                </ul>
+                            </div>
+                            <div class="week-footer">
+                                <div class="deliverable">✅ Deliverable: 完整 UI 体验</div>
+                            </div>
+                        </div>
+
+                        <!-- Week 7 -->
+                        <div class="week-card">
+                            <div class="week-header w7">
+                                <div class="week-num">WEEK 7</div>
+                                <div class="week-title">测试 + 打包</div>
+                            </div>
+                            <div class="week-body">
+                                <div class="focus-area">🎯 Focus: 质量保障</div>
+                                <ul class="task-list">
+                                    <li><span class="task-icon">✓</span> 单元测试 (≥75% 覆盖)</li>
+                                    <li><span class="task-icon">✓</span> 集成测试</li>
+                                    <li><span class="task-icon">✓</span> 安全扫描 (PMD)</li>
+                                    <li><span class="task-icon">✓</span> 2GP Package 创建</li>
+                                    <li><span class="task-icon">✓</span> 安装/升级脚本</li>
+                                    <li><span class="task-icon">✓</span> 用户文档编写</li>
+                                </ul>
+                            </div>
+                            <div class="week-footer">
+                                <div class="deliverable">✅ Deliverable: 可发布版本</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: API Design -->
+            <div class="section">
+                <h3 class="section-title">
+                    <span class="section-number">4</span>
+                    API 接口设计
+                </h3>
+
+                <div class="api-section">
+                    <div class="api-header">
+                        <h4>🔌 GBase Meeting Intelligence API v1</h4>
+                        <span style="color: #94a3b8;">Base URL: https://api.gbase.ai/v1/meetings</span>
+                    </div>
+                    <div class="api-body">
+                        <!-- Endpoint 1 -->
+                        <div class="api-endpoint">
+                            <div class="method-path">
+                                <span class="api-badge post">POST</span>
+                                <span class="path">/meetings</span>
+                            </div>
+                            <div class="desc">创建新会议分析任务，上传录音文件</div>
+                        </div>
+
+                        <!-- Endpoint 2 -->
+                        <div class="api-endpoint">
+                            <div class="method-path">
+                                <span class="api-badge get">GET</span>
+                                <span class="path">/meetings/{meetingId}</span>
+                            </div>
+                            <div class="desc">获取会议分析状态和结果</div>
+                        </div>
+
+                        <!-- Endpoint 3 -->
+                        <div class="api-endpoint">
+                            <div class="method-path">
+                                <span class="api-badge get">GET</span>
+                                <span class="path">/meetings/{meetingId}/transcript</span>
+                            </div>
+                            <div class="desc">获取完整转写文本</div>
+                        </div>
+
+                        <!-- Endpoint 4 -->
+                        <div class="api-endpoint">
+                            <div class="method-path">
+                                <span class="api-badge get">GET</span>
+                                <span class="path">/meetings/{meetingId}/analysis</span>
+                            </div>
+                            <div class="desc">获取结构化分析结果 (JSON)</div>
+                        </div>
+
+                        <!-- Endpoint 5 -->
+                        <div class="api-endpoint">
+                            <div class="method-path">
+                                <span class="api-badge post">POST</span>
+                                <span class="path">/meetings/{meetingId}/proposal</span>
+                            </div>
+                            <div class="desc">触发提案书生成</div>
+                        </div>
+
+                        <!-- Endpoint 6 -->
+                        <div class="api-endpoint">
+                            <div class="method-path">
+                                <span class="api-badge post">POST</span>
+                                <span class="path">/meetings/{meetingId}/ppt</span>
+                            </div>
+                            <div class="desc">触发 PPT 生成</div>
+                        </div>
+
+                        <!-- Endpoint 7 -->
+                        <div class="api-endpoint">
+                            <div class="method-path">
+                                <span class="api-badge get">GET</span>
+                                <span class="path">/meetings/{meetingId}/documents</span>
+                            </div>
+                            <div class="desc">获取生成的文档列表 (提案书/PPT)</div>
+                        </div>
+
+                        <!-- Webhook -->
+                        <div class="api-endpoint" style="border: 1px solid #a855f7; background: rgba(168, 85, 247, 0.1);">
+                            <div class="method-path">
+                                <span class="api-badge ws">WEBHOOK</span>
+                                <span class="path">/callback</span>
+                            </div>
+                            <div class="desc">处理完成回调 → 触发 Salesforce Platform Event</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Response Example -->
+                <h4 style="color: var(--sf-dark); margin: 30px 0 15px;">响应示例 - 会议分析结果</h4>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📋 GET /meetings/{id}/analysis</span>
+                        <span>JSON Response</span>
+                    </div>
+                    <div class="code-body">
+<pre>
+{
+  <span class="string">"meetingId"</span>: <span class="string">"mtg_abc123"</span>,
+  <span class="string">"status"</span>: <span class="string">"completed"</span>,
+  <span class="string">"duration"</span>: <span class="string">"45:32"</span>,
+  <span class="string">"participants"</span>: [
+    { <span class="string">"name"</span>: <span class="string">"田中太郎"</span>, <span class="string">"role"</span>: <span class="string">"Sales Rep"</span>, <span class="string">"speakingTime"</span>: <span class="string">"18:24"</span> },
+    { <span class="string">"name"</span>: <span class="string">"鈴木花子"</span>, <span class="string">"role"</span>: <span class="string">"Customer"</span>, <span class="string">"speakingTime"</span>: <span class="string">"22:08"</span> }
+  ],
+  <span class="string">"summary"</span>: {
+    <span class="string">"overview"</span>: <span class="string">"製造業向けERP導入に関する初回商談..."</span>,
+    <span class="string">"customerPainPoints"</span>: [
+      <span class="string">"現行システムの在庫管理が非効率"</span>,
+      <span class="string">"月次決算に3日かかっている"</span>
+    ],
+    <span class="string">"requirements"</span>: [
+      <span class="string">"リアルタイム在庫可視化"</span>,
+      <span class="string">"自動仕訳機能"</span>
+    ],
+    <span class="string">"nextSteps"</span>: [
+      { <span class="string">"action"</span>: <span class="string">"提案書送付"</span>, <span class="string">"owner"</span>: <span class="string">"田中"</span>, <span class="string">"dueDate"</span>: <span class="string">"2026-01-15"</span> },
+      { <span class="string">"action"</span>: <span class="string">"技術担当との打ち合わせ設定"</span>, <span class="string">"owner"</span>: <span class="string">"田中"</span>, <span class="string">"dueDate"</span>: <span class="string">"2026-01-17"</span> }
+    ],
+    <span class="string">"dealPotential"</span>: {
+      <span class="string">"estimatedValue"</span>: <span class="string">"¥15,000,000"</span>,
+      <span class="string">"probability"</span>: <span class="type">0.65</span>,
+      <span class="string">"stage"</span>: <span class="string">"Discovery"</span>
+    }
+  },
+  <span class="string">"sfMapping"</span>: {
+    <span class="string">"opportunityId"</span>: <span class="string">"006xxx"</span>,
+    <span class="string">"accountId"</span>: <span class="string">"001xxx"</span>,
+    <span class="string">"contactId"</span>: <span class="string">"003xxx"</span>
+  }
+}
+</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Salesforce Components -->
+            <div class="section">
+                <h3 class="section-title">
+                    <span class="section-number">5</span>
+                    Salesforce 组件清单
+                </h3>
+
+                <div class="component-grid">
+                    <!-- LWC Components -->
+                    <div class="component-card">
+                        <div class="component-header sf">
+                            <h4>🧩 Lightning Web Components</h4>
+                            <span style="font-size: 0.8rem; color: #666;">6 组件</span>
+                        </div>
+                        <div class="component-body">
+                            <ul>
+                                <li>
+                                    <span>📁</span>
+                                    <div>
+                                        <div class="file-name">gbaseMeetingUploader</div>
+                                        <div class="file-desc">录音文件上传 + 拖拽支持</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>📋</span>
+                                    <div>
+                                        <div class="file-name">gbaseMeetingList</div>
+                                        <div class="file-desc">会议列表视图 + 搜索过滤</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>📄</span>
+                                    <div>
+                                        <div class="file-name">gbaseMeetingDetail</div>
+                                        <div class="file-desc">会议详情 + 分析结果展示</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>📊</span>
+                                    <div>
+                                        <div class="file-name">gbaseDocumentViewer</div>
+                                        <div class="file-desc">提案书/PPT 预览 + 下载</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>📈</span>
+                                    <div>
+                                        <div class="file-name">gbaseDashboard</div>
+                                        <div class="file-desc">统计仪表板 + 趋势图表</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>⚙️</span>
+                                    <div>
+                                        <div class="file-name">gbaseSettings</div>
+                                        <div class="file-desc">配置页面 + 字段映射</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Apex Classes -->
+                    <div class="component-card">
+                        <div class="component-header gbase">
+                            <h4>⚡ Apex Classes</h4>
+                            <span style="font-size: 0.8rem; color: #666;">8 类</span>
+                        </div>
+                        <div class="component-body">
+                            <ul>
+                                <li>
+                                    <span>🔌</span>
+                                    <div>
+                                        <div class="file-name">GBaseApiService.cls</div>
+                                        <div class="file-desc">API 调用核心类 (Callout)</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>🔐</span>
+                                    <div>
+                                        <div class="file-name">GBaseAuthHandler.cls</div>
+                                        <div class="file-desc">OAuth 认证处理</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>📨</span>
+                                    <div>
+                                        <div class="file-name">GBaseWebhookHandler.cls</div>
+                                        <div class="file-desc">回调处理 (@RestResource)</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>🔔</span>
+                                    <div>
+                                        <div class="file-name">GBaseEventPublisher.cls</div>
+                                        <div class="file-desc">Platform Event 发布</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>📝</span>
+                                    <div>
+                                        <div class="file-name">GBaseMeetingController.cls</div>
+                                        <div class="file-desc">LWC Apex Controller</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>🔄</span>
+                                    <div>
+                                        <div class="file-name">GBaseSyncService.cls</div>
+                                        <div class="file-desc">SF 数据同步逻辑</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>🗺️</span>
+                                    <div>
+                                        <div class="file-name">GBaseFieldMapper.cls</div>
+                                        <div class="file-desc">字段映射处理</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>🧪</span>
+                                    <div>
+                                        <div class="file-name">GBase*Test.cls</div>
+                                        <div class="file-desc">测试类 (≥75% 覆盖)</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Custom Objects -->
+                    <div class="component-card">
+                        <div class="component-header sf">
+                            <h4>📦 Custom Objects</h4>
+                            <span style="font-size: 0.8rem; color: #666;">3 对象</span>
+                        </div>
+                        <div class="component-body">
+                            <ul>
+                                <li>
+                                    <span>🎙️</span>
+                                    <div>
+                                        <div class="file-name">GBase_Meeting__c</div>
+                                        <div class="file-desc">会议主记录 (关联 Opportunity/Account)</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>📄</span>
+                                    <div>
+                                        <div class="file-name">GBase_Document__c</div>
+                                        <div class="file-desc">生成的文档记录 (提案/PPT)</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>⚙️</span>
+                                    <div>
+                                        <div class="file-name">GBase_Settings__c</div>
+                                        <div class="file-desc">配置信息 (Custom Metadata)</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Other Metadata -->
+                    <div class="component-card">
+                        <div class="component-header gbase">
+                            <h4>🔧 其他元数据</h4>
+                            <span style="font-size: 0.8rem; color: #666;">5 项</span>
+                        </div>
+                        <div class="component-body">
+                            <ul>
+                                <li>
+                                    <span>🔐</span>
+                                    <div>
+                                        <div class="file-name">GBase_API (Named Credential)</div>
+                                        <div class="file-desc">API 认证凭据</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>📨</span>
+                                    <div>
+                                        <div class="file-name">GBase_Meeting_Event__e</div>
+                                        <div class="file-desc">Platform Event 定义</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>👤</span>
+                                    <div>
+                                        <div class="file-name">GBase_User (Permission Set)</div>
+                                        <div class="file-desc">用户权限集</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>📱</span>
+                                    <div>
+                                        <div class="file-name">GBase_Meetings (App)</div>
+                                        <div class="file-desc">Lightning App</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>🏠</span>
+                                    <div>
+                                        <div class="file-name">GBase_Home (FlexiPage)</div>
+                                        <div class="file-desc">首页布局</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Apex Code Example -->
+                <h4 style="color: var(--sf-dark); margin: 30px 0 15px;">核心 Apex 代码示例</h4>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>⚡ GBaseApiService.cls</span>
+                        <span>Apex</span>
+                    </div>
+                    <div class="code-body">
+<pre>
+<span class="keyword">public with sharing class</span> <span class="type">GBaseApiService</span> {
+
+    <span class="keyword">private static final</span> <span class="type">String</span> NAMED_CRED = <span class="string">'callout:GBase_API'</span>;
+
+    <span class="comment">// 触发会议分析 (异步)</span>
+    <span class="keyword">@AuraEnabled</span>
+    <span class="keyword">public static</span> <span class="type">String</span> <span class="function">triggerMeetingAnalysis</span>(<span class="type">String</span> meetingId, <span class="type">String</span> audioUrl) {
+        <span class="type">HttpRequest</span> req = <span class="keyword">new</span> <span class="type">HttpRequest</span>();
+        req.setEndpoint(NAMED_CRED + <span class="string">'/meetings'</span>);
+        req.setMethod(<span class="string">'POST'</span>);
+        req.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/json'</span>);
+        req.setTimeout(<span class="type">120000</span>); <span class="comment">// 120s max</span>
+
+        <span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">Object</span>&gt; body = <span class="keyword">new</span> <span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">Object</span>&gt;{
+            <span class="string">'meetingId'</span> => meetingId,
+            <span class="string">'audioUrl'</span> => audioUrl,
+            <span class="string">'callbackUrl'</span> => <span class="type">URL</span>.getOrgDomainUrl().toExternalForm() + <span class="string">'/services/apexrest/gbase/callback'</span>,
+            <span class="string">'options'</span> => <span class="keyword">new</span> <span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">Object</span>&gt;{
+                <span class="string">'language'</span> => <span class="string">'ja'</span>,
+                <span class="string">'generateProposal'</span> => <span class="type">true</span>,
+                <span class="string">'generatePpt'</span> => <span class="type">true</span>
+            }
+        };
+        req.setBody(<span class="type">JSON</span>.serialize(body));
+
+        <span class="type">Http</span> http = <span class="keyword">new</span> <span class="type">Http</span>();
+        <span class="type">HttpResponse</span> res = http.send(req);
+
+        <span class="keyword">if</span> (res.getStatusCode() == <span class="type">202</span>) {
+            <span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">Object</span>&gt; result =
+                (<span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">Object</span>&gt;) <span class="type">JSON</span>.deserializeUntyped(res.getBody());
+            <span class="keyword">return</span> (<span class="type">String</span>) result.get(<span class="string">'jobId'</span>);
+        }
+        <span class="keyword">throw new</span> <span class="type">AuraHandledException</span>(<span class="string">'API Error: '</span> + res.getBody());
+    }
+}
+</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6: Team Structure -->
+            <div class="section">
+                <h3 class="section-title">
+                    <span class="section-number">6</span>
+                    团队结构与职责
+                </h3>
+
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="role-icon">👔</div>
+                        <div class="role-title">项目经理</div>
+                        <div class="role-count">0.5 FTE</div>
+                        <ul class="responsibilities">
+                            <li>整体进度管理</li>
+                            <li>资源协调</li>
+                            <li>风险监控</li>
+                            <li>与吴总对接</li>
+                            <li>每周进展汇报</li>
+                        </ul>
+                    </div>
+                    <div class="team-card">
+                        <div class="role-icon">⚡</div>
+                        <div class="role-title">SF 开发</div>
+                        <div class="role-count">1.0 FTE</div>
+                        <ul class="responsibilities">
+                            <li>LWC 组件开发</li>
+                            <li>Apex 服务类</li>
+                            <li>Custom Objects</li>
+                            <li>Platform Events</li>
+                            <li>Managed Package</li>
+                        </ul>
+                    </div>
+                    <div class="team-card">
+                        <div class="role-icon">🔧</div>
+                        <div class="role-title">后端开发</div>
+                        <div class="role-count">1.0 FTE</div>
+                        <ul class="responsibilities">
+                            <li>API Gateway</li>
+                            <li>GBase 服务集成</li>
+                            <li>Webhook 处理</li>
+                            <li>认证流程</li>
+                            <li>基础设施</li>
+                        </ul>
+                    </div>
+                    <div class="team-card">
+                        <div class="role-icon">🧪</div>
+                        <div class="role-title">QA 工程师</div>
+                        <div class="role-count">0.5 FTE</div>
+                        <ul class="responsibilities">
+                            <li>测试用例设计</li>
+                            <li>自动化测试</li>
+                            <li>安全扫描</li>
+                            <li>性能测试</li>
+                            <li>回归测试</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background: #f0f9ff; padding: 25px; border-radius: 12px; margin-top: 20px;">
+                    <h4 style="color: var(--sf-dark); margin-bottom: 15px;">💡 关键人员依赖</h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                        <div>
+                            <strong>吴总 (技术顾问)</strong>
+                            <p style="font-size: 0.9rem; color: #666; margin-top: 5px;">
+                                Salesforce 技术指导，每周 1 次同步会议
+                            </p>
+                        </div>
+                        <div>
+                            <strong>GBase AI 团队</strong>
+                            <p style="font-size: 0.9rem; color: #666; margin-top: 5px;">
+                                会议分析/文档生成能力支持
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 7: Security Review -->
+            <div class="section">
+                <h3 class="section-title">
+                    <span class="section-number">7</span>
+                    AppExchange Security Review 准备
+                </h3>
+
+                <div class="security-timeline">
+                    <h4 style="color: var(--danger); margin-bottom: 20px;">🔒 安全审核流程 (预计 4-8 周)</h4>
+                    <div class="security-phases">
+                        <div class="security-phase">
+                            <div class="phase-header">
+                                <span class="phase-num">1</span>
+                                <span class="phase-title">自查阶段</span>
+                            </div>
+                            <div class="phase-duration">Week 7 内完成</div>
+                            <ul>
+                                <li>PMD 静态扫描</li>
+                                <li>Checkmarx SAST</li>
+                                <li>SOQL 注入检查</li>
+                                <li>XSS 防护验证</li>
+                            </ul>
+                        </div>
+                        <div class="security-phase">
+                            <div class="phase-header">
+                                <span class="phase-num">2</span>
+                                <span class="phase-title">提交材料</span>
+                            </div>
+                            <div class="phase-duration">1 周</div>
+                            <ul>
+                                <li>Partner Community 账号</li>
+                                <li>Security Self-Assessment</li>
+                                <li>源代码提交</li>
+                                <li>架构文档</li>
+                            </ul>
+                        </div>
+                        <div class="security-phase">
+                            <div class="phase-header">
+                                <span class="phase-num">3</span>
+                                <span class="phase-title">官方审核</span>
+                            </div>
+                            <div class="phase-duration">2-4 周</div>
+                            <ul>
+                                <li>Salesforce 安全团队扫描</li>
+                                <li>ZAProxy DAST 测试</li>
+                                <li>外部服务 TLS 验证</li>
+                                <li>数据处理合规检查</li>
+                            </ul>
+                        </div>
+                        <div class="security-phase">
+                            <div class="phase-header">
+                                <span class="phase-num">4</span>
+                                <span class="phase-title">问题修复</span>
+                            </div>
+                            <div class="phase-duration">1-3 周</div>
+                            <ul>
+                                <li>修复发现的问题</li>
+                                <li>重新提交验证</li>
+                                <li>获得最终批准</li>
+                                <li>上线 AppExchange</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--sf-dark); margin: 30px 0 15px;">安全合规检查清单</h4>
+                <table class="risk-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">检查项</th>
+                            <th style="width: 35%;">要求</th>
+                            <th style="width: 25%;">实现方式</th>
+                            <th style="width: 15%;">状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>SOQL 注入防护</strong></td>
+                            <td>所有动态查询使用 Bind 变量</td>
+                            <td>代码规范 + PMD 扫描</td>
+                            <td><span class="risk-badge low">已规划</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>CRUD/FLS 检查</strong></td>
+                            <td>尊重用户权限</td>
+                            <td>WITH SECURITY_ENFORCED</td>
+                            <td><span class="risk-badge low">已规划</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>TLS 1.2+</strong></td>
+                            <td>外部 API 强制 HTTPS</td>
+                            <td>GBase API Gateway 配置</td>
+                            <td><span class="risk-badge low">已规划</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>SSL A 级证书</strong></td>
+                            <td>Qualys SSL Labs A 等级</td>
+                            <td>Let's Encrypt + 正确配置</td>
+                            <td><span class="risk-badge medium">需验证</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>敏感数据处理</strong></td>
+                            <td>不存储明文凭据</td>
+                            <td>Named Credential + 加密</td>
+                            <td><span class="risk-badge low">已规划</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>测试覆盖率</strong></td>
+                            <td>≥ 75% Apex 代码覆盖</td>
+                            <td>单元测试 + Mock</td>
+                            <td><span class="risk-badge medium">开发中</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 8: Risk Matrix -->
+            <div class="section">
+                <h3 class="section-title">
+                    <span class="section-number">8</span>
+                    风险矩阵与缓解策略
+                </h3>
+
+                <table class="risk-table">
+                    <thead>
+                        <tr>
+                            <th>风险</th>
+                            <th>影响</th>
+                            <th>概率</th>
+                            <th>缓解策略</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Security Review 延期</strong></td>
+                            <td>上线时间推迟 2-4 周</td>
+                            <td><span class="risk-badge high">高</span></td>
+                            <td>提前自查，预留 buffer；同步开发独立 SaaS 版本</td>
+                        </tr>
+                        <tr>
+                            <td><strong>API 性能不达标</strong></td>
+                            <td>用户体验差</td>
+                            <td><span class="risk-badge medium">中</span></td>
+                            <td>早期压测；异步处理；进度反馈 UI</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SF 开发经验不足</strong></td>
+                            <td>开发进度延迟</td>
+                            <td><span class="risk-badge medium">中</span></td>
+                            <td>每周与吴总技术辅导；参考 Trailhead</td>
+                        </tr>
+                        <tr>
+                            <td><strong>日语 ASR 准确率</strong></td>
+                            <td>分析结果质量差</td>
+                            <td><span class="risk-badge low">低</span></td>
+                            <td>使用成熟 Whisper 模型；提供人工修正功能</td>
+                        </tr>
+                        <tr>
+                            <td><strong>市场验证不通过</strong></td>
+                            <td>产品方向错误</td>
+                            <td><span class="risk-badge medium">中</span></td>
+                            <td>Week 4 前完成 Alpha 用户测试；快速迭代</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 9: Success Metrics -->
+            <div class="section">
+                <h3 class="section-title">
+                    <span class="section-number">9</span>
+                    成功指标
+                </h3>
+
+                <div class="metrics-grid">
+                    <div class="metric-card primary">
+                        <div class="metric-icon">⏱️</div>
+                        <div class="metric-label">开发周期</div>
+                        <div class="metric-value">7 周</div>
+                        <div class="metric-target">目标: 按时交付 MVP</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">🧪</div>
+                        <div class="metric-label">测试覆盖率</div>
+                        <div class="metric-value">≥ 75%</div>
+                        <div class="metric-target">AppExchange 要求</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">🎯</div>
+                        <div class="metric-label">分析准确率</div>
+                        <div class="metric-value">≥ 90%</div>
+                        <div class="metric-target">关键信息提取</div>
+                    </div>
+                    <div class="metric-card primary">
+                        <div class="metric-icon">⚡</div>
+                        <div class="metric-label">处理时间</div>
+                        <div class="metric-value">< 5 分钟</div>
+                        <div class="metric-target">45 分钟会议</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">📄</div>
+                        <div class="metric-label">文档生成</div>
+                        <div class="metric-value">< 2 分钟</div>
+                        <div class="metric-target">提案书 + PPT</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">👥</div>
+                        <div class="metric-label">Alpha 用户</div>
+                        <div class="metric-value">5 家</div>
+                        <div class="metric-target">上线前验证</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 10: Go-Live Timeline -->
+            <div class="section">
+                <h3 class="section-title">
+                    <span class="section-number">10</span>
+                    上线时间线
+                </h3>
+
+                <div class="golive-timeline">
+                    <div class="golive-phases">
+                        <div class="golive-phase">
+                            <div class="phase-circle">🚀</div>
+                            <div class="phase-name">项目启动</div>
+                            <div class="phase-date">2026-01-13</div>
+                        </div>
+                        <div class="golive-phase">
+                            <div class="phase-circle">🔧</div>
+                            <div class="phase-name">MVP 完成</div>
+                            <div class="phase-date">2026-03-03</div>
+                        </div>
+                        <div class="golive-phase">
+                            <div class="phase-circle">🧪</div>
+                            <div class="phase-name">Alpha 测试</div>
+                            <div class="phase-date">2026-03-10</div>
+                        </div>
+                        <div class="golive-phase">
+                            <div class="phase-circle">🔒</div>
+                            <div class="phase-name">Security Review</div>
+                            <div class="phase-date">2026-03-17</div>
+                        </div>
+                        <div class="golive-phase">
+                            <div class="phase-circle">🎉</div>
+                            <div class="phase-name">AppExchange 上线</div>
+                            <div class="phase-date">2026-04-14 (预估)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-top: 30px;">
+                    <div style="background: #f0fdf4; padding: 25px; border-radius: 12px;">
+                        <h4 style="color: var(--success); margin-bottom: 15px;">✅ 里程碑检查点</h4>
+                        <ul style="font-size: 0.9rem; color: #666; padding-left: 18px;">
+                            <li><strong>Week 2:</strong> 端到端演示 (录音 → 转写)</li>
+                            <li><strong>Week 4:</strong> 核心功能完成 (分析 + 文档生成)</li>
+                            <li><strong>Week 5:</strong> SF 集成完成 (Activity 同步)</li>
+                            <li><strong>Week 7:</strong> 可发布版本 + 文档</li>
+                        </ul>
+                    </div>
+                    <div style="background: #fef3c7; padding: 25px; border-radius: 12px;">
+                        <h4 style="color: #92400e; margin-bottom: 15px;">⚠️ 关键依赖</h4>
+                        <ul style="font-size: 0.9rem; color: #666; padding-left: 18px;">
+                            <li>Salesforce 开发者账号 (本周购买)</li>
+                            <li>Partner Community 注册</li>
+                            <li>GBase AI 服务接入权限</li>
+                            <li>Alpha 测试客户招募</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 11: Action Items -->
+            <div class="section">
+                <h3 class="section-title">
+                    <span class="section-number">11</span>
+                    立即行动项
+                </h3>
+
+                <div class="action-grid">
+                    <div class="action-card urgent">
+                        <div class="action-header">
+                            <span class="action-title">🔴 购买 Salesforce 开发者账号</span>
+                            <span class="action-timeline">本周内</span>
+                        </div>
+                        <div class="action-desc">
+                            访问 developer.salesforce.com 注册免费开发者版，或购买 Partner Developer Edition
+                        </div>
+                    </div>
+                    <div class="action-card urgent">
+                        <div class="action-header">
+                            <span class="action-title">🔴 约吴总技术辅导会议</span>
+                            <span class="action-timeline">本周内</span>
+                        </div>
+                        <div class="action-desc">
+                            确认技术方向，获取 Salesforce 开发最佳实践指导
+                        </div>
+                    </div>
+                    <div class="action-card this-week">
+                        <div class="action-header">
+                            <span class="action-title">🟠 搭建开发环境</span>
+                            <span class="action-timeline">Week 1</span>
+                        </div>
+                        <div class="action-desc">
+                            配置 VS Code + SFDX，创建 Scratch Org，设置 CI/CD
+                        </div>
+                    </div>
+                    <div class="action-card this-week">
+                        <div class="action-header">
+                            <span class="action-title">🟠 GBase API 规范确认</span>
+                            <span class="action-timeline">Week 1</span>
+                        </div>
+                        <div class="action-desc">
+                            与 GBase 团队确认 API 接口规范，获取测试环境
+                        </div>
+                    </div>
+                    <div class="action-card next-week">
+                        <div class="action-header">
+                            <span class="action-title">🔵 Partner Community 注册</span>
+                            <span class="action-timeline">Week 2</span>
+                        </div>
+                        <div class="action-desc">
+                            注册 Salesforce Partner Community，准备 AppExchange listing
+                        </div>
+                    </div>
+                    <div class="action-card next-week">
+                        <div class="action-header">
+                            <span class="action-title">🔵 招募 Alpha 测试用户</span>
+                            <span class="action-timeline">Week 3</span>
+                        </div>
+                        <div class="action-desc">
+                            联系 5 家潜在客户，确认参与 Alpha 测试意愿
+                        </div>
+                    </div>
+                    <div class="action-card ongoing">
+                        <div class="action-header">
+                            <span class="action-title">🟢 每周向赵总汇报</span>
+                            <span class="action-timeline">每周五</span>
+                        </div>
+                        <div class="action-desc">
+                            进度报告、风险预警、资源需求
+                        </div>
+                    </div>
+                    <div class="action-card ongoing">
+                        <div class="action-header">
+                            <span class="action-title">🟢 每日站会</span>
+                            <span class="action-timeline">每日</span>
+                        </div>
+                        <div class="action-desc">
+                            团队同步，问题暴露，快速决策
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="version">版本 1.0 | 2026-01-10</div>
+            <div class="copyright">
+                GBase AI × Salesforce - Sales Meeting Intelligence 项目开发计划
+            </div>
+        </div>
+    </div>
+</body>
+</html>
