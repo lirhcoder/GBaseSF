@@ -1,0 +1,146 @@
+<template>
+    <lightning-card title="訪問報告 / Visit Report" icon-name="standard:visit">
+        <div class="slds-p-around_medium">
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <div class="slds-is-relative loading-container">
+                    <lightning-spinner
+                        alternative-text="Loading..."
+                        size="medium">
+                    </lightning-spinner>
+                    <p class="slds-text-align_center slds-m-top_large">{loadingMessage}</p>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+                <!-- AI Analysis Status -->
+                <template if:true={hasAnalysisResult}>
+                    <div class="slds-notify slds-notify_alert slds-theme_success slds-m-bottom_medium" role="alert">
+                        <lightning-icon icon-name="utility:success" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        <span>AI分析が完了しました / AI Analysis Complete</span>
+                    </div>
+                </template>
+
+                <!-- Form Fields -->
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <!-- Left Column -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-input
+                            type="date"
+                            label="訪問日 / Visit Date"
+                            name="visitDate"
+                            value={formData.visitDate}
+                            onchange={handleFieldChange}
+                            required
+                            class="slds-m-bottom_small">
+                        </lightning-input>
+
+                        <lightning-input
+                            type="text"
+                            label="会社名 / Company Name"
+                            name="companyName"
+                            value={formData.companyName}
+                            onchange={handleFieldChange}
+                            required
+                            class="slds-m-bottom_small">
+                        </lightning-input>
+
+                        <lightning-input
+                            type="text"
+                            label="担当者名 / Contact Name"
+                            name="contactName"
+                            value={formData.contactName}
+                            onchange={handleFieldChange}
+                            class="slds-m-bottom_small">
+                        </lightning-input>
+
+                        <lightning-input
+                            type="text"
+                            label="役職 / Title"
+                            name="contactTitle"
+                            value={formData.contactTitle}
+                            onchange={handleFieldChange}
+                            class="slds-m-bottom_small">
+                        </lightning-input>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-input
+                            type="text"
+                            label="訪問目的 / Visit Purpose"
+                            name="visitPurpose"
+                            value={formData.visitPurpose}
+                            onchange={handleFieldChange}
+                            class="slds-m-bottom_small">
+                        </lightning-input>
+
+                        <lightning-input
+                            type="number"
+                            label="商談金額 / Opportunity Amount"
+                            name="opportunityAmount"
+                            value={formData.opportunityAmount}
+                            onchange={handleFieldChange}
+                            formatter="currency"
+                            step="1"
+                            class="slds-m-bottom_small">
+                        </lightning-input>
+
+                        <lightning-input
+                            type="date"
+                            label="予想成約日 / Expected Close Date"
+                            name="expectedCloseDate"
+                            value={formData.expectedCloseDate}
+                            onchange={handleFieldChange}
+                            class="slds-m-bottom_small">
+                        </lightning-input>
+                    </div>
+
+                    <!-- Full Width Fields -->
+                    <div class="slds-col slds-size_1-of-1">
+                        <lightning-textarea
+                            label="商談内容 / Discussion Summary"
+                            name="discussionSummary"
+                            value={discussionSummaryText}
+                            onchange={handleTextAreaChange}
+                            max-length="32000"
+                            class="slds-m-bottom_small">
+                        </lightning-textarea>
+
+                        <lightning-textarea
+                            label="次のアクション / Next Actions"
+                            name="nextActions"
+                            value={nextActionsText}
+                            onchange={handleTextAreaChange}
+                            max-length="32000"
+                            class="slds-m-bottom_small">
+                        </lightning-textarea>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="slds-m-top_medium slds-grid slds-gutters">
+                    <div class="slds-col">
+                        <lightning-button
+                            variant="brand"
+                            label="保存 / Save"
+                            title="Save Report"
+                            icon-name="utility:save"
+                            onclick={handleSave}
+                            disabled={isSaveDisabled}
+                            class="slds-m-right_small">
+                        </lightning-button>
+                        <lightning-button
+                            variant="neutral"
+                            label="プレビュー / Preview"
+                            title="Preview Report"
+                            icon-name="utility:preview"
+                            onclick={handlePreview}
+                            disabled={isSaveDisabled}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

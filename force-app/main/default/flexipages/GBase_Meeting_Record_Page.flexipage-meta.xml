@@ -13,7 +13,7 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentName>c:gbaseMeetingDetail</componentName>
+                <componentName>gbaseMeetingDetail</componentName>
                 <identifier>gbaseMeetingDetail1</identifier>
             </componentInstance>
         </itemInstances>
@@ -33,7 +33,7 @@
     <masterLabel>GBase Meeting Record Page</masterLabel>
     <sobjectType>GBase_Meeting__c</sobjectType>
     <template>
-        <name>flexipage:RecordHomeTemplateDesktop</name>
+        <name>flexipage:recordHomeTemplateDesktop</name>
     </template>
     <type>RecordPage</type>
 </FlexiPage>

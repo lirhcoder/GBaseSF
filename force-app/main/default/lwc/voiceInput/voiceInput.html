@@ -1,0 +1,326 @@
+<template>
+    <lightning-card title="音声入力 / Voice Input" icon-name="utility:voice">
+        <div class="slds-p-around_medium">
+            <!-- Status Display -->
+            <div class="slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                <div>
+                    <lightning-badge
+                        label={statusLabel}
+                        class={statusClass}>
+                    </lightning-badge>
+                    <template if:true={isListening}>
+                        <span class="slds-m-left_small recording-indicator"></span>
+                    </template>
+                </div>
+                <!-- Edit mode toggle - always show when there's text -->
+                <template if:true={hasText}>
+                    <lightning-button
+                        icon-name={editModeButtonIcon}
+                        label={editModeButtonLabel}
+                        onclick={handleToggleEditMode}
+                        variant={editModeButtonVariant}
+                        class="edit-toggle-btn">
+                    </lightning-button>
+                </template>
+            </div>
+
+            <!-- Voice Control Buttons -->
+            <div class="button-container slds-m-bottom_large">
+                <lightning-button
+                    variant={startButtonVariant}
+                    label="録音開始"
+                    title="Start Recording"
+                    icon-name="utility:record"
+                    onclick={handleStartRecording}
+                    disabled={isListening}
+                    class="control-button">
+                </lightning-button>
+                <lightning-button
+                    variant="destructive"
+                    label="停止"
+                    title="Stop Recording"
+                    icon-name="utility:stop"
+                    onclick={handleStopRecording}
+                    disabled={isNotListening}
+                    class="control-button">
+                </lightning-button>
+                <lightning-button
+                    variant="neutral"
+                    label="クリア"
+                    title="Clear Text"
+                    icon-name="utility:clear"
+                    onclick={handleClear}
+                    disabled={hasNoText}
+                    class="control-button">
+                </lightning-button>
+            </div>
+
+            <!-- Language Selection -->
+            <div class="slds-m-bottom_medium">
+                <lightning-combobox
+                    name="language"
+                    label="言語 / Language"
+                    value={selectedLanguage}
+                    options={languageOptions}
+                    onchange={handleLanguageChange}>
+                </lightning-combobox>
+            </div>
+
+            <!-- Audio Player (shown after recording) -->
+            <template if:true={hasAudioRecording}>
+                <div class="audio-player-container slds-box slds-theme_shade slds-m-bottom_medium">
+                    <div class="slds-grid slds-grid_vertical-align-center slds-gutters_small">
+                        <!-- Play/Pause Button -->
+                        <div class="slds-col slds-no-flex">
+                            <lightning-button-icon
+                                icon-name={playPauseIcon}
+                                alternative-text={playPauseLabel}
+                                title={playPauseLabel}
+                                onclick={handlePlayPause}
+                                variant="brand"
+                                size="medium">
+                            </lightning-button-icon>
+                        </div>
+                        <!-- Seek Controls and Time Display -->
+                        <div class="slds-col slds-grow">
+                            <div class="audio-controls-row slds-grid slds-grid_vertical-align-center">
+                                <!-- Backward Seek -->
+                                <lightning-button-icon
+                                    icon-name="utility:jump_to_left"
+                                    alternative-text={seekBackwardLabel}
+                                    title={seekBackwardLabel}
+                                    onclick={handleSeekBackward}
+                                    variant="border"
+                                    size="small"
+                                    class="seek-btn">
+                                </lightning-button-icon>
+                                <!-- Time Display -->
+                                <div class="audio-time-display slds-m-horizontal_small">
+                                    <span class="current-time">{formattedCurrentTime}</span>
+                                    <span class="time-separator"> / </span>
+                                    <span class="total-time">{formattedDuration}</span>
+                                </div>
+                                <!-- Forward Seek -->
+                                <lightning-button-icon
+                                    icon-name="utility:jump_to_right"
+                                    alternative-text={seekForwardLabel}
+                                    title={seekForwardLabel}
+                                    onclick={handleSeekForward}
+                                    variant="border"
+                                    size="small"
+                                    class="seek-btn">
+                                </lightning-button-icon>
+                                <!-- Seek Step Selector -->
+                                <div class="seek-step-selector slds-m-left_medium">
+                                    <lightning-button-group>
+                                        <lightning-button
+                                            label="1秒"
+                                            onclick={handleSetSeekStep1}
+                                            variant={seekStep1Variant}
+                                            class="seek-step-btn">
+                                        </lightning-button>
+                                        <lightning-button
+                                            label="5秒"
+                                            onclick={handleSetSeekStep5}
+                                            variant={seekStep5Variant}
+                                            class="seek-step-btn">
+                                        </lightning-button>
+                                    </lightning-button-group>
+                                </div>
+                            </div>
+                            <audio class="audio-element"></audio>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Transcript Display -->
+            <div class="slds-m-bottom_medium">
+                <!-- With Segments: Formatted Display -->
+                <template if:true={hasSegments}>
+                    <div class="transcript-container">
+                        <div class="transcript-header slds-grid slds-grid_align-spread slds-m-bottom_small">
+                            <span class="slds-text-title_bold">認識テキスト</span>
+                            <template if:true={isEditMode}>
+                                <lightning-button
+                                    variant="neutral"
+                                    label="セグメント追加"
+                                    icon-name="utility:add"
+                                    onclick={handleAddSegment}
+                                    size="small">
+                                </lightning-button>
+                            </template>
+                        </div>
+
+                        <div class="transcript-segments">
+                            <template for:each={displaySegments} for:item="segment">
+                                <div key={segment.id}
+                                     class="transcript-segment"
+                                     data-timestamp={segment.timestamp}
+                                     data-segment-id={segment.id}
+                                     onclick={handleSegmentClick}>
+
+                                    <!-- View Mode -->
+                                    <template if:false={isEditMode}>
+                                        <div class="segment-content">
+                                            <span class="segment-timestamp">{segment.formattedTime}</span>
+                                            <template if:true={segment.hasSpeaker}>
+                                                <span class="segment-speaker">{segment.speakerLabel}</span>
+                                            </template>
+                                            <span class="segment-text">{segment.text}</span>
+                                        </div>
+                                    </template>
+
+                                    <!-- Edit Mode -->
+                                    <template if:true={isEditMode}>
+                                        <div class="segment-edit">
+                                            <!-- Timestamp adjustment row -->
+                                            <div class="timestamp-edit-row slds-grid slds-grid_vertical-align-center slds-m-bottom_x-small">
+                                                <lightning-button-icon
+                                                    icon-name="utility:play"
+                                                    alternative-text="再生"
+                                                    title="この位置から再生"
+                                                    data-timestamp={segment.timestamp}
+                                                    onclick={handlePlayFromTimestamp}
+                                                    variant="brand"
+                                                    size="small"
+                                                    class="play-segment-btn">
+                                                </lightning-button-icon>
+                                                <lightning-button-icon
+                                                    icon-name="utility:chevronleft"
+                                                    alternative-text="-0.5秒"
+                                                    title="-0.5秒"
+                                                    data-segment-id={segment.id}
+                                                    data-adjust="-0.5"
+                                                    onclick={handleTimestampAdjust}
+                                                    variant="border"
+                                                    size="small"
+                                                    class="adjust-btn">
+                                                </lightning-button-icon>
+                                                <input
+                                                    type="text"
+                                                    value={segment.formattedTime}
+                                                    data-segment-id={segment.id}
+                                                    onchange={handleTimestampChange}
+                                                    class="timestamp-input slds-input" />
+                                                <lightning-button-icon
+                                                    icon-name="utility:chevronright"
+                                                    alternative-text="+0.5秒"
+                                                    title="+0.5秒"
+                                                    data-segment-id={segment.id}
+                                                    data-adjust="0.5"
+                                                    onclick={handleTimestampAdjust}
+                                                    variant="border"
+                                                    size="small"
+                                                    class="adjust-btn">
+                                                </lightning-button-icon>
+                                                <lightning-button-icon
+                                                    icon-name="utility:delete"
+                                                    alternative-text="削除"
+                                                    title="削除"
+                                                    data-segment-id={segment.id}
+                                                    onclick={handleDeleteSegment}
+                                                    variant="bare"
+                                                    class="delete-segment-btn slds-m-left_small">
+                                                </lightning-button-icon>
+                                            </div>
+                                            <!-- Text edit row -->
+                                            <lightning-input
+                                                type="text"
+                                                value={segment.text}
+                                                data-segment-id={segment.id}
+                                                onchange={handleSegmentEdit}
+                                                variant="label-hidden"
+                                                class="segment-input">
+                                            </lightning-input>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Without Segments: Simple Textarea -->
+                <template if:false={hasSegments}>
+                    <!-- Edit Mode: Editable textarea -->
+                    <template if:true={isEditMode}>
+                        <lightning-textarea
+                            label="認識テキスト（編集中）"
+                            value={transcript}
+                            placeholder="テキストを入力または編集してください..."
+                            onchange={handleTranscriptChange}
+                            max-length="32000"
+                            class="transcript-area-edit">
+                        </lightning-textarea>
+                    </template>
+                    <!-- View Mode: Formatted read-only display -->
+                    <template if:false={isEditMode}>
+                        <template if:true={hasText}>
+                            <div class="transcript-display">
+                                <div class="transcript-header slds-m-bottom_small">
+                                    <span class="slds-text-title_bold">認識テキスト</span>
+                                </div>
+                                <div class="transcript-content">
+                                    <template for:each={formattedParagraphs} for:item="para">
+                                        <p key={para.id} class={para.className}>{para.text}</p>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                        <template if:false={hasText}>
+                            <lightning-textarea
+                                label="認識テキスト / Recognized Text"
+                                value={transcript}
+                                placeholder="音声を録音すると、ここにテキストが表示されます..."
+                                onchange={handleTranscriptChange}
+                                max-length="32000"
+                                class="transcript-area">
+                            </lightning-textarea>
+                        </template>
+                    </template>
+                </template>
+            </div>
+
+            <!-- Interim Results (Real-time) -->
+            <template if:true={interimTranscript}>
+                <div class="slds-box slds-theme_shade slds-m-bottom_medium interim-box">
+                    <p class="slds-text-body_small slds-text-color_weak">リアルタイム認識中...</p>
+                    <p class="interim-text">{interimTranscript}</p>
+                </div>
+            </template>
+
+            <!-- Action Button -->
+            <div class="slds-m-top_medium">
+                <lightning-button
+                    variant="brand"
+                    label="AI分析を実行"
+                    title="Analyze with AI"
+                    icon-name="utility:einstein"
+                    onclick={handleAnalyze}
+                    disabled={hasNoText}
+                    class="analyze-button">
+                </lightning-button>
+            </div>
+
+            <!-- Error Message -->
+            <template if:true={hasError}>
+                <div class="slds-notify slds-notify_alert slds-theme_error slds-m-top_medium" role="alert">
+                    <span class="slds-assistive-text">error</span>
+                    <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small">
+                        <lightning-icon icon-name="utility:error" size="x-small" variant="inverse"></lightning-icon>
+                    </span>
+                    <h2>{errorMessage}</h2>
+                </div>
+            </template>
+
+            <!-- Browser Support Warning -->
+            <template if:false={isSpeechSupported}>
+                <div class="slds-notify slds-notify_alert slds-theme_warning slds-m-top_medium" role="alert">
+                    <span class="slds-assistive-text">warning</span>
+                    <h2>このブラウザは音声認識に対応していません。Chrome、Edge、またはSafariをお使いください。</h2>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

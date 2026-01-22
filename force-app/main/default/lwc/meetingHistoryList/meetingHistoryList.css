@@ -1,0 +1,186 @@
+/* Report list */
+.report-list {
+    padding: 0;
+}
+
+/* Report item */
+.report-item {
+    padding: 16px;
+    border-bottom: 1px solid #e5e5e5;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s ease;
+}
+
+.report-item:hover {
+    background: #f3f3f3;
+}
+
+.report-item:last-child {
+    border-bottom: none;
+}
+
+/* Report header */
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.report-company {
+    display: flex;
+    align-items: center;
+}
+
+.company-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: #181818;
+}
+
+.report-date {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #706e6b;
+}
+
+/* Report body */
+.report-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.report-info {
+    flex-grow: 1;
+}
+
+.info-row {
+    display: flex;
+    gap: 8px;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.info-label {
+    color: #706e6b;
+    min-width: 50px;
+}
+
+.info-value {
+    color: #3e3e3c;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+/* Report metrics */
+.report-metrics {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.metric {
+    text-align: right;
+}
+
+.amount-metric .metric-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2e844a;
+}
+
+/* Sentiment badges */
+.sentiment-positive,
+.sentiment-neutral,
+.sentiment-negative {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+}
+
+.sentiment-positive {
+    background: #e6f7ed;
+}
+
+.sentiment-positive lightning-icon {
+    --slds-c-icon-color-foreground: #2e844a;
+}
+
+.sentiment-neutral {
+    background: #f3f3f3;
+}
+
+.sentiment-neutral lightning-icon {
+    --slds-c-icon-color-foreground: #706e6b;
+}
+
+.sentiment-negative {
+    background: #fde8e8;
+}
+
+.sentiment-negative lightning-icon {
+    --slds-c-icon-color-foreground: #ea001e;
+}
+
+/* Report footer */
+.report-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 11px;
+    color: #b0adab;
+}
+
+.report-id {
+    font-family: monospace;
+}
+
+/* Hover actions */
+.report-actions {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.report-item:hover .report-actions {
+    opacity: 1;
+}
+
+/* Empty state */
+.empty-state {
+    padding: 48px 24px;
+}
+
+.empty-icon {
+    --slds-c-icon-color-foreground: #b0adab;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .report-body {
+        flex-direction: column;
+    }
+
+    .report-metrics {
+        margin-top: 8px;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .info-value {
+        max-width: 150px;
+    }
+}

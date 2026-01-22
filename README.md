@@ -1,92 +1,130 @@
-# GBase Meetings - Salesforce Integration
+# AI営業報告システム / AI Visit Report System
 
-GBase x Salesforce 集成项目，为销售团队提供智能会议分析功能。
+Salesforce + Claude AI を活用した営業訪問報告の自動化システム
 
-## 项目概述
+## 機能 / Features
 
-GBase Meetings 是一个 Salesforce Lightning 应用，集成 GBase AI 的会议分析能力，帮助销售团队：
-- 自动分析销售会议录音
-- 生成会议纪要和行动项
-- 跟踪客户关系和销售机会
+- **音声入力**: ブラウザのWeb Speech APIを使用した音声からテキストへの変換
+- **AI分析**: Claude APIによる訪問内容の自動構造化
+- **レポート生成**: PDF形式での報告書出力
+- **Salesforce連携**: Account/Contactとの自動関連付け
 
-## 功能特性
+## システム要件 / Requirements
 
-### Custom Objects
-- **GBase Meeting** - 会议记录管理
-- **GBase Document** - AI生成的文档管理
+- Salesforce Developer Edition または Production Org
+- Claude API Key (Anthropic)
+- 対応ブラウザ: Chrome, Edge, Safari (音声認識機能)
 
-### Lightning Components
-- Meeting List - 会议列表视图
-- Meeting Detail - 会议详情页面
-- Meeting Analyzer - AI 分析触发器
+## インストール手順 / Installation
 
-### 自动化
-- Record-Triggered Flow: 会议完成时自动触发分析
-- Platform Events: 实时状态更新
-
-### 报表和仪表板
-- Meetings by Status - 按状态分组的会议报表
-- Meetings by Account - 按客户分组的会议报表
-- Meeting Analytics Dashboard - 会议分析仪表板
-
-## 项目结构
-
-```
-gbase-meetings/
-├── force-app/main/default/
-│   ├── applications/     # Lightning App
-│   ├── classes/          # Apex Classes
-│   ├── dashboards/       # Dashboards
-│   ├── flows/            # Flows
-│   ├── lwc/              # Lightning Web Components
-│   ├── objects/          # Custom Objects
-│   ├── permissionsets/   # Permission Sets
-│   ├── reports/          # Reports
-│   └── tabs/             # Custom Tabs
-├── docs/
-│   ├── research/         # 市场调研和分析报告 (HTML)
-│   └── analysis/         # 技术设计文档 (Markdown)
-└── config/               # 配置文件
-```
-
-## 部署
-
-### 前置条件
-- Salesforce CLI (sf)
-- 已授权的 Salesforce Org
-
-### 部署命令
+### 1. Salesforce CLIのインストール
 
 ```bash
-# 部署所有组件
-sf project deploy start --source-dir force-app --target-org YOUR_ORG_ALIAS
-
-# 仅部署特定组件
-sf project deploy start --source-dir force-app/main/default/classes --target-org YOUR_ORG_ALIAS
+npm install -g @salesforce/cli
 ```
 
-## 配置
+### 2. Orgへの認証
 
-### API 配置
-1. 进入 Setup > Custom Settings > GBase API Settings
-2. 点击 Manage
-3. 添加 API_Key__c 值
+```bash
+# Developer Edition の場合
+sf org login web --alias my-dev-org --instance-url https://login.salesforce.com
 
-### Remote Site Setting
-已配置 `https://api.gbase.ai` 为远程站点
+# Sandbox の場合
+sf org login web --alias my-sandbox --instance-url https://test.salesforce.com
+```
 
-## 开发阶段
+### 3. ソースコードのデプロイ
 
-- [x] Phase 1: Custom Objects & Fields
-- [x] Phase 2: Apex Classes & Platform Events
-- [x] Phase 3: Lightning Components & App
-- [x] Phase 4: Permission Sets & Validation Rules
-- [x] Phase 5: Reports, Dashboards & Flows
+```bash
+cd gbase-sf-integration
+sf project deploy start --source-dir force-app --target-org my-dev-org
+```
 
-## 文档
+### 4. Permission Setの割り当て
 
-查看 `docs/` 目录获取详细的市场调研和技术设计文档。
+```bash
+sf org assign permset --name AI_Visit_Report_User --target-org my-dev-org
+```
 
-## License
+### 5. Claude API Keyの設定
 
-Copyright (c) 2025 GBase
+1. Setup → Custom Metadata Types → Claude API Settings → Manage Records
+2. "Default" レコードを編集
+3. API_Key__c フィールドに Claude API Key を入力
+
+### 6. アプリケーションへのアクセス
+
+1. App Launcher から "AI営業報告" を検索
+2. または直接タブ "AI_Visit_Report" にアクセス
+
+## 使用方法 / Usage
+
+### 音声入力での報告作成
+
+1. 「録音開始」ボタンをクリック
+2. 訪問内容を話す（例：「今日ABC会社の田中部長を訪問しました...」）
+3. 「停止」ボタンをクリック
+4. 「AI分析を実行」をクリック
+5. 分析結果を確認・編集
+6. 「保存」をクリック
+7. 「PDFダウンロード」で報告書を出力
+
+### テキスト入力での報告作成
+
+1. テキストエリアに訪問内容を入力
+2. 「AI分析を実行」をクリック
+3. 以降同様
+
+## プロジェクト構造 / Project Structure
+
+```
+force-app/main/default/
+├── classes/
+│   ├── ClaudeAPIService.cls      # Claude API連携
+│   ├── VisitReportController.cls  # メインコントローラー
+│   └── VisitReportPDFController.cls # PDF生成
+├── lwc/
+│   ├── voiceInput/               # 音声入力コンポーネント
+│   ├── visitReportForm/          # 報告書フォーム
+│   ├── reportPreview/            # プレビュー
+│   └── visitReportApp/           # メインアプリ
+├── objects/
+│   ├── Visit_Report__c/          # カスタムオブジェクト
+│   └── Claude_API_Settings__mdt/ # API設定メタデータ
+├── pages/
+│   └── VisitReportPDF.page       # PDF テンプレート
+└── remoteSiteSettings/
+    └── Claude_API.remoteSite-meta.xml
+```
+
+## カスタマイズ / Customization
+
+### AIプロンプトの変更
+
+`ClaudeAPIService.cls` の `buildAnalysisPrompt()` メソッドを編集
+
+### PDFテンプレートの変更
+
+`VisitReportPDF.page` のHTMLとCSSを編集
+
+## トラブルシューティング / Troubleshooting
+
+### AI分析が失敗する場合
+
+1. Claude API Keyが正しく設定されているか確認
+2. Remote Site Settingsで `api.anthropic.com` が有効か確認
+3. Apex Debugログでエラー内容を確認
+
+### 音声認識が動作しない場合
+
+1. 対応ブラウザ（Chrome/Edge/Safari）を使用しているか確認
+2. マイクのアクセス許可を確認
+3. HTTPSでアクセスしているか確認
+
+## ライセンス / License
+
+MIT License
+
+## サポート / Support
+
+GBase SF Integration Team

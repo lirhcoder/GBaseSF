@@ -1,0 +1,135 @@
+<template>
+    <lightning-card title="最近の会議記録" icon-name="standard:recent">
+        <!-- Header actions -->
+        <div slot="actions">
+            <lightning-button-icon
+                icon-name="utility:refresh"
+                alternative-text="更新"
+                onclick={handleRefresh}
+                class="slds-m-right_x-small">
+            </lightning-button-icon>
+            <lightning-button
+                variant="base"
+                label="すべて表示"
+                onclick={handleViewAll}
+                icon-name="utility:open"
+                icon-position="right">
+            </lightning-button>
+        </div>
+
+        <!-- Loading -->
+        <template if:true={isLoading}>
+            <div class="slds-p-around_medium slds-text-align_center">
+                <lightning-spinner alternative-text="読み込み中" size="small"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Error -->
+        <template if:true={error}>
+            <div class="slds-p-around_medium">
+                <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                    <lightning-icon icon-name="utility:error" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                    <span>{error}</span>
+                </div>
+            </div>
+        </template>
+
+        <!-- Empty State -->
+        <template if:false={hasReports}>
+            <template if:false={isLoading}>
+                <div class="slds-p-around_large slds-text-align_center empty-state">
+                    <lightning-icon icon-name="utility:record" size="large" class="empty-icon"></lightning-icon>
+                    <p class="slds-text-heading_small slds-m-top_medium">{emptyMessage}</p>
+                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                        新しい会議記録を作成するとここに表示されます
+                    </p>
+                </div>
+            </template>
+        </template>
+
+        <!-- Reports List -->
+        <template if:true={hasReports}>
+            <div class="report-list">
+                <template for:each={reports} for:item="report">
+                    <div key={report.id}
+                         class="report-item"
+                         data-id={report.id}
+                         onclick={handleRowClick}>
+
+                        <!-- Report Header -->
+                        <div class="report-header">
+                            <div class="report-company">
+                                <lightning-icon icon-name="standard:account" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                <span class="company-name">{report.companyName}</span>
+                            </div>
+                            <div class="report-date">
+                                <lightning-icon icon-name="utility:event" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                                {report.visitDate}
+                            </div>
+                        </div>
+
+                        <!-- Report Body -->
+                        <div class="report-body">
+                            <div class="report-info">
+                                <div class="info-row">
+                                    <span class="info-label">担当者:</span>
+                                    <span class="info-value">{report.contactName}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">目的:</span>
+                                    <span class="info-value">{report.visitPurpose}</span>
+                                </div>
+                            </div>
+
+                            <div class="report-metrics">
+                                <!-- Amount -->
+                                <template if:true={report.opportunityAmount}>
+                                    <div class="metric amount-metric">
+                                        <span class="metric-value">{report.formattedAmount}</span>
+                                    </div>
+                                </template>
+
+                                <!-- Sentiment -->
+                                <template if:true={report.sentiment}>
+                                    <div class={report.sentimentClass}>
+                                        <lightning-icon icon-name={report.sentimentIcon} size="xx-small"></lightning-icon>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Report Footer -->
+                        <div class="report-footer">
+                            <span class="report-id">{report.name}</span>
+                            <span class="created-date">作成日 {report.createdDate}</span>
+                        </div>
+
+                        <!-- Hover Actions -->
+                        <div class="report-actions">
+                            <lightning-button-icon
+                                icon-name="utility:open"
+                                alternative-text="詳細を表示"
+                                size="small"
+                                variant="bare"
+                                data-id={report.id}
+                                onclick={handleLoadReport}>
+                            </lightning-button-icon>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Load More -->
+            <template if:true={hasMore}>
+                <div class="slds-p-around_small slds-text-align_center">
+                    <lightning-button
+                        variant="base"
+                        label="さらに読み込む"
+                        onclick={handleLoadMore}
+                        icon-name="utility:chevrondown">
+                    </lightning-button>
+                </div>
+            </template>
+        </template>
+    </lightning-card>
+</template>

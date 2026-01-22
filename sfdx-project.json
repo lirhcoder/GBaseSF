@@ -5,7 +5,7 @@
       "default": true
     }
   ],
-  "name": "gbase-meetings",
+  "name": "gbase-sf-integration",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "65.0"

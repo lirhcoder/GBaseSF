@@ -3,7 +3,6 @@
     <fullName>Enable_Debug_Logging__c</fullName>
     <defaultValue>false</defaultValue>
     <description>Enable debug logging for troubleshooting</description>
-    <externalId>false</externalId>
     <label>Enable Debug Logging</label>
     <trackTrending>false</trackTrending>
     <type>Checkbox</type>

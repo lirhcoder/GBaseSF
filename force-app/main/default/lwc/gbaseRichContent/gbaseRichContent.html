@@ -1,0 +1,74 @@
+<template>
+    <div class="rich-content-container">
+        <!-- Markdown/Text Content -->
+        <template if:true={hasTextContent}>
+            <div class="text-content" lwc:dom="manual"></div>
+        </template>
+
+        <!-- Image Display -->
+        <template if:true={hasImages}>
+            <div class="images-container slds-m-top_small">
+                <template for:each={images} for:item="image">
+                    <div key={image.id} class="image-wrapper slds-m-bottom_small">
+                        <img src={image.url} alt={image.alt} class="content-image" onclick={handleImageClick} data-url={image.url}/>
+                        <template if:true={image.caption}>
+                            <p class="image-caption slds-text-body_small slds-text-color_weak">{image.caption}</p>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <!-- Table Display -->
+        <template if:true={hasTable}>
+            <div class="table-container slds-m-top_small">
+                <lightning-datatable
+                    key-field="id"
+                    data={tableData}
+                    columns={tableColumns}
+                    hide-checkbox-column
+                    show-row-number-column>
+                </lightning-datatable>
+            </div>
+        </template>
+
+        <!-- Mermaid Diagram -->
+        <template if:true={hasMermaid}>
+            <div class="mermaid-container slds-m-top_small">
+                <div class="mermaid-diagram" lwc:dom="manual"></div>
+            </div>
+        </template>
+
+        <!-- Code Block -->
+        <template if:true={hasCode}>
+            <div class="code-container slds-m-top_small">
+                <div class="code-header slds-p-horizontal_small slds-p-vertical_xx-small">
+                    <span class="code-language">{codeLanguage}</span>
+                    <lightning-button-icon
+                        icon-name="utility:copy_to_clipboard"
+                        alternative-text="Copy code"
+                        size="small"
+                        onclick={handleCopyCode}
+                        class="copy-button">
+                    </lightning-button-icon>
+                </div>
+                <pre class="code-block"><code class={codeClass}>{codeContent}</code></pre>
+            </div>
+        </template>
+    </div>
+
+    <!-- Image Modal -->
+    <template if:true={showImageModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeImageModal}>
+                    <lightning-icon icon-name="utility:close" alternative-text="Close" size="small"></lightning-icon>
+                </button>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <img src={modalImageUrl} alt="Enlarged image" class="modal-image"/>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" onclick={closeImageModal}></div>
+    </template>
+</template>

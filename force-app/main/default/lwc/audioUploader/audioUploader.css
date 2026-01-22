@@ -1,0 +1,245 @@
+/* Container */
+.audio-uploader {
+    position: relative;
+}
+
+/* Drop Zone */
+.drop-zone {
+    border: 2px dashed #d8dde6;
+    border-radius: 8px;
+    padding: 32px 24px;
+    text-align: center;
+    background: #fafbfc;
+    transition: all 0.2s ease;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drop-zone:hover,
+.drop-zone.drag-over {
+    border-color: #0070d2;
+    background: #f0f7ff;
+}
+
+.drop-zone.has-file {
+    border-style: solid;
+    border-color: #0070d2;
+    background: #fff;
+}
+
+.drop-zone-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.upload-icon {
+    --slds-c-icon-color-foreground: #b0adab;
+}
+
+/* File Input */
+.file-input {
+    display: none;
+}
+
+.file-input + label {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* File Info */
+.file-info {
+    width: 100%;
+    text-align: left;
+}
+
+.file-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    background: #f3f3f3;
+    border-radius: 8px;
+}
+
+.file-icon {
+    flex-shrink: 0;
+}
+
+.file-details {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.file-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #181818;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #706e6b;
+    margin-top: 4px;
+}
+
+.meta-divider {
+    color: #d8dde6;
+}
+
+.remove-button {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.remove-button:hover {
+    background: #e5e5e5;
+}
+
+/* Audio Player */
+.audio-player {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+}
+
+.audio-player audio {
+    display: none;
+}
+
+.play-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #0070d2;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.play-button:hover {
+    background: #005fb2;
+}
+
+.play-button lightning-icon {
+    --slds-c-icon-color-foreground: white;
+}
+
+.player-label {
+    font-size: 13px;
+    color: #706e6b;
+}
+
+/* Chunking Badge */
+.chunking-badge {
+    background: #0070d2;
+    color: white;
+}
+
+/* Transcribing Overlay */
+.transcribing-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    z-index: 10;
+    padding: 20px;
+}
+
+/* Chunk Progress Bar */
+.chunk-progress-bar {
+    width: 200px;
+    height: 8px;
+    background: #e5e5e5;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.chunk-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0070d2, #1b96ff);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Transcription Result */
+.transcription-result {
+    background: #f0fff4;
+    border: 1px solid #2e844a;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.success-icon {
+    --slds-c-icon-color-foreground: #2e844a;
+}
+
+.result-text {
+    padding: 12px;
+    background: #fff;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    line-height: 1.6;
+}
+
+.result-text p {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.result-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .drop-zone {
+        padding: 24px 16px;
+    }
+
+    .file-header {
+        flex-wrap: wrap;
+    }
+
+    .file-details {
+        width: 100%;
+        order: 2;
+        margin-top: 8px;
+    }
+}

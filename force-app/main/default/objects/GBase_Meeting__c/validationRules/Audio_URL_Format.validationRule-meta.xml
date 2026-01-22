@@ -5,7 +5,7 @@
     <description>Validates that Audio URL starts with https://</description>
     <errorConditionFormula>AND(
     NOT(ISBLANK(Audio_URL__c)),
-    NOT(BEGINS(Audio_URL__c, "https://"))
+    NOT(BEGINS(Audio_URL__c, &quot;https://&quot;))
 )</errorConditionFormula>
     <errorDisplayField>Audio_URL__c</errorDisplayField>
     <errorMessage>Audio URL must start with https://</errorMessage>

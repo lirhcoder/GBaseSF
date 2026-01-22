@@ -1,0 +1,107 @@
+<template>
+    <lightning-card title="Salesforce AI アシスタント" icon-name="standard:bot">
+        <!-- チャット履歴 -->
+        <div class="chat-container slds-p-horizontal_medium">
+            <div class="chat-messages" lwc:ref="chatMessages">
+                <template for:each={messages} for:item="msg">
+                    <div key={msg.id} class={msg.containerClass}>
+                        <div class={msg.bubbleClass}>
+                            <!-- ユーザーメッセージ -->
+                            <template if:true={msg.isUser}>
+                                <p>{msg.text}</p>
+                            </template>
+
+                            <!-- AIメッセージ -->
+                            <template if:false={msg.isUser}>
+                                <p>{msg.text}</p>
+
+                                <!-- 生成されたSOQL -->
+                                <template if:true={msg.query}>
+                                    <div class="query-box slds-m-top_small">
+                                        <p class="query-label">生成されたクエリ:</p>
+                                        <code class="query-code">{msg.query}</code>
+                                    </div>
+                                </template>
+
+                                <!-- クエリ結果テーブル -->
+                                <template if:true={msg.hasRecords}>
+                                    <div class="result-table slds-m-top_small">
+                                        <p class="result-count">{msg.recordCount} 件のレコードが見つかりました</p>
+                                        <div class="table-wrapper">
+                                            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                                <thead>
+                                                    <tr>
+                                                        <template for:each={msg.fieldNames} for:item="field">
+                                                            <th key={field} scope="col">{field}</th>
+                                                        </template>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <template for:each={msg.tableRows} for:item="row">
+                                                        <tr key={row.id}>
+                                                            <template for:each={row.cells} for:item="cell">
+                                                                <td key={cell.key}>{cell.value}</td>
+                                                            </template>
+                                                        </tr>
+                                                    </template>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- 読み込み中 -->
+                <template if:true={isLoading}>
+                    <div class="message-container ai-message">
+                        <div class="message-bubble ai-bubble">
+                            <lightning-spinner alternative-text="処理中" size="small"></lightning-spinner>
+                            <span class="slds-m-left_small">ご質問を分析しています...</span>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- 入力エリア -->
+        <div slot="footer" class="input-container">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_10-of-12">
+                    <lightning-input
+                        type="text"
+                        placeholder="自然言語でクエリしたい内容を入力してください。例：今月の金額が10万円以上の商談を探す"
+                        value={userInput}
+                        onchange={handleInputChange}
+                        onkeyup={handleKeyUp}
+                        disabled={isLoading}>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_2-of-12">
+                    <lightning-button
+                        variant="brand"
+                        label="送信"
+                        onclick={handleSend}
+                        disabled={isLoading}>
+                    </lightning-button>
+                </div>
+            </div>
+
+            <!-- クイック例 -->
+            <div class="quick-examples slds-m-top_small">
+                <span class="example-label">お試し:</span>
+                <template for:each={examples} for:item="example">
+                    <lightning-badge
+                        key={example}
+                        label={example}
+                        onclick={handleExampleClick}
+                        data-value={example}
+                        class="example-badge">
+                    </lightning-badge>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+</template>

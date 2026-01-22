@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Analysis_Status__c</fullName>
+    <description>Status of the GBase AI analysis for this meeting</description>
     <label>Analysis Status</label>
-    <type>Picklist</type>
     <required>false</required>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
+    <type>Picklist</type>
     <valueSet>
         <restricted>true</restricted>
         <valueSetDefinition>
@@ -36,5 +38,4 @@
             </value>
         </valueSetDefinition>
     </valueSet>
-    <description>Status of the GBase AI analysis for this meeting</description>
 </CustomField>

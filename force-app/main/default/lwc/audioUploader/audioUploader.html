@@ -1,0 +1,157 @@
+<template>
+    <div class="audio-uploader">
+        <!-- Configuration Warning -->
+        <template if:false={isConfigured}>
+            <div class="slds-notify slds-notify_alert slds-alert_warning slds-m-bottom_medium" role="alert">
+                <lightning-icon icon-name="utility:warning" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                <span>Whisper APIが設定されていません。Setup → Custom Metadata Types → OpenAI API SettingsでAPIキーを設定してください。</span>
+            </div>
+        </template>
+
+        <!-- Drop Zone -->
+        <div class={dropZoneClass}
+             ondragover={handleDragOver}
+             ondragleave={handleDragLeave}
+             ondrop={handleDrop}>
+
+            <template if:false={hasFile}>
+                <!-- Empty state -->
+                <div class="drop-zone-content">
+                    <lightning-icon icon-name="utility:upload" size="large" class="upload-icon"></lightning-icon>
+                    <h3 class="slds-text-heading_small slds-m-top_small">音声ファイルをここにドラッグ</h3>
+                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                        または下のボタンをクリックしてファイルを選択
+                    </p>
+                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                        対応形式: MP3, WAV, M4A, WebM, OGG, FLAC (最大 100MB、自動分割対応)
+                    </p>
+                    <div class="slds-m-top_medium">
+                        <input type="file"
+                               accept={acceptedFormats}
+                               onchange={handleFileSelect}
+                               class="file-input"
+                               id="audioFileInput">
+                        <label for="audioFileInput" class="slds-button slds-button_neutral">
+                            <lightning-icon icon-name="utility:open_folder" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            ファイルを選択
+                        </label>
+                    </div>
+                </div>
+            </template>
+
+            <template if:true={hasFile}>
+                <!-- File selected state -->
+                <div class="file-info">
+                    <div class="file-header">
+                        <div class="file-icon">
+                            <lightning-icon icon-name="doctype:audio" size="medium"></lightning-icon>
+                        </div>
+                        <div class="file-details">
+                            <h4 class="file-name">{fileName}</h4>
+                            <div class="file-meta">
+                                <span class="file-size">{fileSize}</span>
+                                <template if:true={audioDuration}>
+                                    <span class="meta-divider">|</span>
+                                    <span class="file-duration">{formattedDuration}</span>
+                                </template>
+                                <template if:true={showChunkingInfo}>
+                                    <span class="meta-divider">|</span>
+                                    <span class="slds-badge slds-badge_inverse chunking-badge">
+                                        {totalChunks}分割で処理
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                        <button class="remove-button" onclick={handleRemoveFile} title="ファイルを削除">
+                            <lightning-icon icon-name="utility:close" size="x-small"></lightning-icon>
+                        </button>
+                    </div>
+
+                    <!-- Audio Player -->
+                    <template if:true={audioUrl}>
+                        <div class="audio-player slds-m-top_small">
+                            <audio src={audioUrl} onended={handleAudioEnded} preload="metadata"></audio>
+                            <button class="play-button" onclick={handlePlayPause}>
+                                <template if:false={isPlaying}>
+                                    <lightning-icon icon-name="utility:play" size="small"></lightning-icon>
+                                </template>
+                                <template if:true={isPlaying}>
+                                    <lightning-icon icon-name="utility:pause" size="small"></lightning-icon>
+                                </template>
+                            </button>
+                            <span class="player-label">{playerLabel}</span>
+                        </div>
+                    </template>
+
+                    <!-- Transcribe Button -->
+                    <div class="slds-m-top_medium">
+                        <lightning-button
+                            variant="brand"
+                            label={transcribeButtonLabel}
+                            onclick={handleTranscribe}
+                            disabled={isTranscribeDisabled}
+                            icon-name="utility:text">
+                        </lightning-button>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Transcribing Progress -->
+        <template if:true={isTranscribing}>
+            <div class="transcribing-overlay">
+                <lightning-spinner alternative-text="文字起こし中" size="medium"></lightning-spinner>
+                <template if:true={showChunkingInfo}>
+                    <p class="slds-m-top_small slds-text-heading_small">
+                        セグメント {currentChunk} / {totalChunks} を処理中...
+                    </p>
+                    <div class="chunk-progress-bar slds-m-top_small">
+                        <div class="chunk-progress-fill" style={chunkProgressStyle}></div>
+                    </div>
+                </template>
+                <template if:false={showChunkingInfo}>
+                    <p class="slds-m-top_small">音声をテキストに変換中...</p>
+                </template>
+                <p class="slds-text-body_small slds-text-color_weak slds-m-top_small">
+                    音声の長さによって数秒から数分かかる場合があります
+                </p>
+            </div>
+        </template>
+
+        <!-- Transcription Result -->
+        <template if:true={hasTranscription}>
+            <div class="transcription-result slds-m-top_medium">
+                <div class="result-header">
+                    <h4 class="slds-text-title_bold">
+                        <lightning-icon icon-name="utility:check" size="x-small" class="slds-m-right_x-small success-icon"></lightning-icon>
+                        文字起こし結果
+                    </h4>
+                    <template if:true={audioDuration}>
+                        <span class="slds-badge slds-badge_lightest">
+                            再生時間: {formattedDuration}
+                        </span>
+                    </template>
+                </div>
+                <div class="result-text slds-m-top_small">
+                    <p>{transcriptionResult}</p>
+                </div>
+                <div class="result-actions slds-m-top_small">
+                    <lightning-button
+                        variant="brand"
+                        label="このテキストで分析を開始"
+                        onclick={handleUseTranscription}
+                        icon-name="utility:forward">
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+
+        <!-- Error Message -->
+        <template if:true={errorMessage}>
+            <div class="slds-notify slds-notify_alert slds-alert_error slds-m-top_medium" role="alert">
+                <lightning-icon icon-name="utility:error" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                <span>{errorMessage}</span>
+            </div>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,84 @@
+<template>
+    <div class="slds-page-header slds-m-bottom_medium">
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title">
+                <div class="slds-media">
+                    <div class="slds-media__figure">
+                        <lightning-icon icon-name="standard:ai_accelerator_card" size="large"></lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                        <div class="slds-page-header__name">
+                            <div class="slds-page-header__name-title">
+                                <h1>
+                                    <span class="slds-page-header__title slds-truncate">AI営業報告システム</span>
+                                </h1>
+                            </div>
+                        </div>
+                        <p class="slds-page-header__name-meta">AI-Powered Visit Report System</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-page-header__col-actions">
+                <div class="slds-page-header__controls">
+                    <div class="slds-page-header__control">
+                        <lightning-button
+                            variant="neutral"
+                            label="新規作成"
+                            title="Create New Report"
+                            icon-name="utility:add"
+                            onclick={handleNewReport}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slds-grid slds-wrap slds-gutters">
+        <!-- Left Column: Voice Input -->
+        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-m-bottom_medium">
+            <c-voice-input
+                onanalyze={handleAnalyze}
+                ontranscriptchange={handleTranscriptChange}>
+            </c-voice-input>
+        </div>
+
+        <!-- Right Column: Form -->
+        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-m-bottom_medium">
+            <c-visit-report-form
+                onsave={handleSave}
+                onpreview={handlePreview}>
+            </c-visit-report-form>
+        </div>
+
+        <!-- Full Width: Preview -->
+        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+            <c-report-preview></c-report-preview>
+        </div>
+    </div>
+
+    <!-- Recent Reports Section -->
+    <template if:true={showRecentReports}>
+        <lightning-card title="最近の報告書 / Recent Reports" icon-name="utility:list">
+            <div class="slds-p-around_medium">
+                <template if:true={isLoadingReports}>
+                    <lightning-spinner alternative-text="Loading..." size="small"></lightning-spinner>
+                </template>
+                <template if:false={isLoadingReports}>
+                    <template if:true={hasRecentReports}>
+                        <lightning-datatable
+                            key-field="Id"
+                            data={recentReports}
+                            columns={columns}
+                            hide-checkbox-column
+                            onrowaction={handleRowAction}>
+                        </lightning-datatable>
+                    </template>
+                    <template if:false={hasRecentReports}>
+                        <p class="slds-text-color_weak">報告書がありません</p>
+                    </template>
+                </template>
+            </div>
+        </lightning-card>
+    </template>
+</template>

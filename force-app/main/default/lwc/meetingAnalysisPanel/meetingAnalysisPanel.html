@@ -1,0 +1,550 @@
+<template>
+    <div class="analysis-panel">
+        <!-- Header with Summary -->
+        <div class="panel-header slds-p-around_medium slds-theme_shade">
+            <div class="slds-grid slds-wrap slds-gutters">
+                <!-- Left: Basic Info -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">
+                        <lightning-icon icon-name="standard:account" size="small" class="slds-m-right_x-small"></lightning-icon>
+                        {data.companyName}
+                    </h2>
+                    <div class="slds-grid slds-wrap slds-gutters_x-small">
+                        <div class="slds-col slds-size_1-of-2">
+                            <span class="slds-text-body_small slds-text-color_weak">日付:</span>
+                            <span class="slds-text-body_regular slds-m-left_xx-small">{data.meetingDate}</span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <span class="slds-text-body_small slds-text-color_weak">種類:</span>
+                            <span class="slds-text-body_regular slds-m-left_xx-small">{meetingTypeLabel}</span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-m-top_x-small">
+                            <span class="slds-text-body_small slds-text-color_weak">時間:</span>
+                            <span class="slds-text-body_regular slds-m-left_xx-small">{data.durationMinutes} 分</span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-m-top_x-small">
+                            <span class="slds-text-body_small slds-text-color_weak">目的:</span>
+                            <span class="slds-text-body_regular slds-m-left_xx-small">{data.meetingPurpose}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Sentiment & Score -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-top_medium slds-medium-m-top_none">
+                    <div class="slds-grid slds-grid_align-end">
+                        <div class="score-card slds-m-right_medium">
+                            <span class="slds-text-body_small slds-text-color_weak">顧客の反応</span>
+                            <div class={sentimentClass}>
+                                <lightning-icon icon-name={sentimentIcon} size="x-small"></lightning-icon>
+                                <span>{sentimentLabel}</span>
+                            </div>
+                        </div>
+                        <div class="score-card">
+                            <span class="slds-text-body_small slds-text-color_weak">関心度</span>
+                            <div class={engagementScoreClass}>
+                                <span class="score-value">{data.engagementScore}</span>
+                                <span class="score-max">/10</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <template if:true={data.summary}>
+                <div class="slds-m-top_medium summary-box">
+                    <lightning-icon icon-name="utility:sparkles" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                    <span class="slds-text-body_regular">{data.summary}</span>
+                </div>
+            </template>
+        </div>
+
+        <!-- Accordion Sections -->
+        <div class="slds-p-horizontal_medium">
+            <!-- Participants Section -->
+            <lightning-accordion allow-multiple-sections-open active-section-name="participants,discussion,opportunity,actions">
+                <!-- Participants -->
+                <lightning-accordion-section name="participants" label="参加者">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <!-- Customer Side -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <h4 class="slds-text-title_bold slds-m-bottom_x-small">
+                                <lightning-icon icon-name="utility:company" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                                顧客側
+                            </h4>
+                            <template if:true={customerParticipants.length}>
+                                <ul class="participant-list">
+                                    <template for:each={customerParticipants} for:item="person">
+                                        <li key={person.name} class="participant-item">
+                                            <lightning-icon icon-name="standard:user" size="x-small"></lightning-icon>
+                                            <div class="participant-info">
+                                                <span class="participant-name">{person.name}</span>
+                                                <span class="participant-title">{person.title}</span>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </template>
+                            <template if:false={customerParticipants.length}>
+                                <p class="slds-text-color_weak">未確認</p>
+                            </template>
+                        </div>
+
+                        <!-- Our Side -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-top_medium slds-medium-m-top_none">
+                            <h4 class="slds-text-title_bold slds-m-bottom_x-small">
+                                <lightning-icon icon-name="utility:groups" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                                自社側
+                            </h4>
+                            <template if:true={ourParticipants.length}>
+                                <ul class="participant-list">
+                                    <template for:each={ourParticipants} for:item="person">
+                                        <li key={person.name} class="participant-item">
+                                            <lightning-icon icon-name="standard:user" size="x-small"></lightning-icon>
+                                            <div class="participant-info">
+                                                <span class="participant-name">{person.name}</span>
+                                                <span class="participant-title">{person.title}</span>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </template>
+                            <template if:false={ourParticipants.length}>
+                                <p class="slds-text-color_weak">未確認</p>
+                            </template>
+                        </div>
+                    </div>
+                </lightning-accordion-section>
+
+                <!-- Discussion Points -->
+                <lightning-accordion-section name="discussion" label="主要議論ポイント">
+                    <template if:true={hasDiscussionPoints}>
+                        <ul class="bullet-list">
+                            <template for:each={data.keyDiscussionPoints} for:item="point">
+                                <li key={point} class="bullet-item">
+                                    <lightning-icon icon-name="utility:check" size="xx-small" class="bullet-icon"></lightning-icon>
+                                    <span>{point}</span>
+                                </li>
+                            </template>
+                        </ul>
+                    </template>
+                    <template if:false={hasDiscussionPoints}>
+                        <p class="slds-text-color_weak">主要議論ポイントが抽出されませんでした</p>
+                    </template>
+                </lightning-accordion-section>
+
+                <!-- Pain Points -->
+                <lightning-accordion-section name="painpoints" label="顧客の課題">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <h4 class="slds-text-title_bold slds-m-bottom_x-small">
+                                <lightning-icon icon-name="utility:warning" size="xx-small" class="slds-m-right_xx-small icon-warning"></lightning-icon>
+                                ペインポイント
+                            </h4>
+                            <template if:true={hasPainPoints}>
+                                <ul class="pain-point-list">
+                                    <template for:each={data.customerPainPoints} for:item="pain">
+                                        <li key={pain} class="pain-point-item">{pain}</li>
+                                    </template>
+                                </ul>
+                            </template>
+                            <template if:false={hasPainPoints}>
+                                <p class="slds-text-color_weak">明確なペインポイントが確認されませんでした</p>
+                            </template>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-top_medium slds-medium-m-top_none">
+                            <h4 class="slds-text-title_bold slds-m-bottom_x-small">
+                                <lightning-icon icon-name="utility:bookmark" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                                要望
+                            </h4>
+                            <template if:true={hasRequirements}>
+                                <ul class="requirement-list">
+                                    <template for:each={data.customerRequirements} for:item="req">
+                                        <li key={req} class="requirement-item">{req}</li>
+                                    </template>
+                                </ul>
+                            </template>
+                            <template if:false={hasRequirements}>
+                                <p class="slds-text-color_weak">明確な要望が確認されませんでした</p>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Customer Questions -->
+                    <template if:true={hasQuestions}>
+                        <div class="slds-m-top_medium">
+                            <h4 class="slds-text-title_bold slds-m-bottom_x-small">
+                                <lightning-icon icon-name="utility:question" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                                顧客からの質問
+                            </h4>
+                            <ul class="question-list">
+                                <template for:each={data.questionsAsked} for:item="question">
+                                    <li key={question} class="question-item">{question}</li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+                </lightning-accordion-section>
+
+                <!-- Opportunity -->
+                <lightning-accordion-section name="opportunity" label="商談情報">
+                    <template if:true={hasOpportunity}>
+                        <div class="opportunity-card">
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                                    <div class="opp-metric">
+                                        <span class="opp-label">金額</span>
+                                        <span class="opp-value opp-amount">{opportunityAmount}</span>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                                    <div class="opp-metric">
+                                        <span class="opp-label">ステージ</span>
+                                        <span class="opp-value">{data.opportunity.stage}</span>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4 slds-m-top_small slds-medium-m-top_none">
+                                    <div class="opp-metric">
+                                        <span class="opp-label">成約確率</span>
+                                        <span class={probabilityClass}>{opportunityProbability}%</span>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4 slds-m-top_small slds-medium-m-top_none">
+                                    <div class="opp-metric">
+                                        <span class="opp-label">予想成約日</span>
+                                        <span class="opp-value">{data.opportunity.expectedCloseDate}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <template if:true={data.opportunity.productInterest}>
+                                <div class="slds-m-top_small">
+                                    <span class="opp-label">関心製品:</span>
+                                    <span class="slds-m-left_x-small">{data.opportunity.productInterest}</span>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                    <template if:false={hasOpportunity}>
+                        <p class="slds-text-color_weak">商談情報が確認されませんでした</p>
+                    </template>
+                </lightning-accordion-section>
+
+                <!-- Next Actions -->
+                <lightning-accordion-section name="actions" label="ToDo">
+                    <template if:true={hasActions}>
+                        <div class="action-list">
+                            <template for:each={actionsWithIndex} for:item="action">
+                                <div key={action.index} class="action-item">
+                                    <div class="action-header">
+                                        <span class={action.priorityClass}>{action.priorityLabel}</span>
+                                        <span class="action-text">{action.action}</span>
+                                    </div>
+                                    <div class="action-meta">
+                                        <span class="action-owner">
+                                            <lightning-icon icon-name="utility:user" size="xx-small"></lightning-icon>
+                                            {action.owner}
+                                        </span>
+                                        <span class="action-due">
+                                            <lightning-icon icon-name="utility:date_input" size="xx-small"></lightning-icon>
+                                            {action.dueDate}
+                                        </span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                    <template if:false={hasActions}>
+                        <p class="slds-text-color_weak">ToDoが確認されませんでした</p>
+                    </template>
+                </lightning-accordion-section>
+
+                <!-- Risks -->
+                <lightning-accordion-section name="risks" label="リスクと競合">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <h4 class="slds-text-title_bold slds-m-bottom_x-small">
+                                <lightning-icon icon-name="utility:error" size="xx-small" class="slds-m-right_xx-small icon-error"></lightning-icon>
+                                リスク
+                            </h4>
+                            <template if:true={hasRisks}>
+                                <ul class="risk-list">
+                                    <template for:each={data.risks} for:item="risk">
+                                        <li key={risk} class="risk-item">{risk}</li>
+                                    </template>
+                                </ul>
+                            </template>
+                            <template if:false={hasRisks}>
+                                <p class="slds-text-color_weak">リスクが確認されませんでした</p>
+                            </template>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-top_medium slds-medium-m-top_none">
+                            <h4 class="slds-text-title_bold slds-m-bottom_x-small">
+                                <lightning-icon icon-name="utility:company" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                                競合他社
+                            </h4>
+                            <template if:true={hasCompetitors}>
+                                <ul class="competitor-list">
+                                    <template for:each={data.competitors} for:item="competitor">
+                                        <li key={competitor} class="competitor-item">{competitor}</li>
+                                    </template>
+                                </ul>
+                            </template>
+                            <template if:false={hasCompetitors}>
+                                <p class="slds-text-color_weak">競合他社が確認されませんでした</p>
+                            </template>
+                        </div>
+                    </div>
+                </lightning-accordion-section>
+            </lightning-accordion>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="panel-footer slds-p-around_medium slds-border_top">
+            <div class="slds-grid slds-grid_align-spread">
+                <div>
+                    <lightning-button
+                        variant="neutral"
+                        label="再入力"
+                        onclick={handleBack}
+                        icon-name="utility:back">
+                    </lightning-button>
+                    <lightning-button
+                        variant={editButtonVariant}
+                        label={editButtonLabel}
+                        onclick={toggleEditMode}
+                        icon-name={editButtonIcon}
+                        class="slds-m-left_small">
+                    </lightning-button>
+                </div>
+                <div>
+                    <template if:true={editMode}>
+                        <lightning-button
+                            variant="success"
+                            label="変更を適用"
+                            onclick={handleSaveEdits}
+                            icon-name="utility:check"
+                            class="slds-m-right_small">
+                        </lightning-button>
+                    </template>
+                    <lightning-button
+                        variant="brand"
+                        label="CRMに保存"
+                        onclick={handleSave}
+                        icon-name="utility:save">
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Mode Panel -->
+        <template if:true={editMode}>
+            <div class="edit-mode-panel slds-p-around_medium slds-theme_shade">
+                <div class="edit-mode-banner slds-m-bottom_medium">
+                    <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                    <span>編集モード - 以下のフォームで内容を修正できます</span>
+                </div>
+
+                <!-- 1. 基本情報 -->
+                <div class="slds-box slds-m-bottom_medium">
+                    <h3 class="slds-text-heading_small slds-m-bottom_small">
+                        <lightning-icon icon-name="standard:account" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        基本情報
+                    </h3>
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input label="会社名" value={editedData.companyName} data-field="companyName" onchange={handleBasicFieldChange}></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input label="会議日" type="date" value={editedData.meetingDate} data-field="meetingDate" onchange={handleBasicFieldChange}></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-combobox label="会議種類" value={editedData.meetingType} options={meetingTypeOptions} data-field="meetingType" onchange={handleBasicFieldChange}></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input label="会議目的" value={editedData.meetingPurpose} data-field="meetingPurpose" onchange={handleBasicFieldChange}></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-m-bottom_small">
+                            <lightning-textarea label="概要" value={editedData.summary} data-field="summary" onchange={handleBasicFieldChange} max-length="2000"></lightning-textarea>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-combobox label="顧客の反応" value={editedData.sentiment} options={sentimentOptions} data-field="sentiment" onchange={handleBasicFieldChange}></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-slider label="関心度 (1-10)" min="1" max="10" value={editedData.engagementScore} data-field="engagementScore" onchange={handleBasicFieldChange}></lightning-slider>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. 参加者 -->
+                <div class="slds-box slds-m-bottom_medium">
+                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                        <h3 class="slds-text-heading_small">
+                            <lightning-icon icon-name="utility:groups" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            参加者
+                        </h3>
+                        <lightning-button-icon icon-name="utility:add" alternative-text="追加" title="参加者を追加" onclick={handleAddParticipant}></lightning-button-icon>
+                    </div>
+                    <template for:each={editableParticipants} for:item="person">
+                        <div key={person.index} class="participant-edit-row slds-grid slds-wrap slds-gutters slds-m-bottom_small slds-p-around_small slds-box">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12">
+                                <lightning-input label="名前" value={person.name} data-index={person.index} data-pfield="name" onchange={handleParticipantChange}></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12">
+                                <lightning-input label="役職" value={person.title} data-index={person.index} data-pfield="title" onchange={handleParticipantChange}></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12">
+                                <lightning-combobox label="所属" value={person.role} options={participantRoleOptions} data-index={person.index} data-pfield="role" onchange={handleParticipantChange}></lightning-combobox>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12 slds-align-bottom">
+                                <lightning-button-icon icon-name="utility:delete" alternative-text="削除" variant="bare" data-index={person.index} onclick={handleRemoveParticipant}></lightning-button-icon>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- 3. 主要議論ポイント -->
+                <div class="slds-box slds-m-bottom_medium">
+                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                        <h3 class="slds-text-heading_small">
+                            <lightning-icon icon-name="utility:comments" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            主要議論ポイント
+                        </h3>
+                        <lightning-button-icon icon-name="utility:add" alternative-text="追加" data-field="keyDiscussionPoints" onclick={handleAddListItem}></lightning-button-icon>
+                    </div>
+                    <template for:each={editableKeyDiscussionPoints} for:item="item">
+                        <div key={item.index} class="slds-grid slds-m-bottom_x-small">
+                            <lightning-input class="slds-grow" value={item.value} data-field="keyDiscussionPoints" data-index={item.index} onchange={handleListItemChange}></lightning-input>
+                            <lightning-button-icon icon-name="utility:delete" alternative-text="削除" variant="bare" data-field="keyDiscussionPoints" data-index={item.index} onclick={handleRemoveListItem} class="slds-m-left_x-small"></lightning-button-icon>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- 4. 顧客の課題 -->
+                <div class="slds-box slds-m-bottom_medium">
+                    <h3 class="slds-text-heading_small slds-m-bottom_small">
+                        <lightning-icon icon-name="utility:warning" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        顧客の課題
+                    </h3>
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <!-- Pain Points -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                <span class="slds-text-title_bold">ペインポイント</span>
+                                <lightning-button-icon icon-name="utility:add" alternative-text="追加" size="small" data-field="customerPainPoints" onclick={handleAddListItem}></lightning-button-icon>
+                            </div>
+                            <template for:each={editablePainPoints} for:item="item">
+                                <div key={item.index} class="slds-grid slds-m-bottom_x-small">
+                                    <lightning-input class="slds-grow" value={item.value} data-field="customerPainPoints" data-index={item.index} onchange={handleListItemChange}></lightning-input>
+                                    <lightning-button-icon icon-name="utility:delete" variant="bare" data-field="customerPainPoints" data-index={item.index} onclick={handleRemoveListItem} class="slds-m-left_x-small"></lightning-button-icon>
+                                </div>
+                            </template>
+                        </div>
+                        <!-- Requirements -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                <span class="slds-text-title_bold">要望</span>
+                                <lightning-button-icon icon-name="utility:add" alternative-text="追加" size="small" data-field="customerRequirements" onclick={handleAddListItem}></lightning-button-icon>
+                            </div>
+                            <template for:each={editableRequirements} for:item="item">
+                                <div key={item.index} class="slds-grid slds-m-bottom_x-small">
+                                    <lightning-input class="slds-grow" value={item.value} data-field="customerRequirements" data-index={item.index} onchange={handleListItemChange}></lightning-input>
+                                    <lightning-button-icon icon-name="utility:delete" variant="bare" data-field="customerRequirements" data-index={item.index} onclick={handleRemoveListItem} class="slds-m-left_x-small"></lightning-button-icon>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. 商談情報 -->
+                <div class="slds-box slds-m-bottom_medium">
+                    <h3 class="slds-text-heading_small slds-m-bottom_small">
+                        <lightning-icon icon-name="utility:money" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        商談情報
+                    </h3>
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input label="金額 (円)" type="number" value={editedOpportunityAmount} data-field="amount" onchange={handleOpportunityFieldChange} step="10000"></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-combobox label="ステージ" value={editedOpportunityStage} options={stageOptions} data-field="stage" onchange={handleOpportunityFieldChange}></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input label="成約確率 (%)" type="number" value={editedOpportunityProbability} data-field="probability" onchange={handleOpportunityFieldChange} min="0" max="100"></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input label="予想成約日" type="date" value={editedOpportunityCloseDate} data-field="expectedCloseDate" onchange={handleOpportunityFieldChange}></lightning-input>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. ToDo -->
+                <div class="slds-box slds-m-bottom_medium">
+                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                        <h3 class="slds-text-heading_small">
+                            <lightning-icon icon-name="utility:task" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            ToDo
+                        </h3>
+                        <lightning-button-icon icon-name="utility:add" alternative-text="追加" onclick={handleAddActionItem}></lightning-button-icon>
+                    </div>
+                    <template for:each={editableActions} for:item="action">
+                        <div key={action.index} class="action-edit-row slds-p-around_small slds-box slds-m-bottom_small">
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_x-small">
+                                    <lightning-input label="アクション" value={action.action} data-index={action.index} data-actionfield="action" onchange={handleActionItemChange}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_2-of-12 slds-m-bottom_x-small">
+                                    <lightning-input label="担当者" value={action.owner} data-index={action.index} data-actionfield="owner" onchange={handleActionItemChange}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_2-of-12 slds-m-bottom_x-small">
+                                    <lightning-input label="期限" type="date" value={action.dueDate} data-index={action.index} data-actionfield="dueDate" onchange={handleActionItemChange}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12 slds-align-bottom">
+                                    <lightning-button-icon icon-name="utility:delete" alternative-text="削除" variant="bare" data-index={action.index} onclick={handleRemoveActionItem}></lightning-button-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- 7. リスクと競合 -->
+                <div class="slds-box slds-m-bottom_medium">
+                    <h3 class="slds-text-heading_small slds-m-bottom_small">
+                        <lightning-icon icon-name="utility:error" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        リスクと競合
+                    </h3>
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <!-- Risks -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                <span class="slds-text-title_bold">リスク</span>
+                                <lightning-button-icon icon-name="utility:add" alternative-text="追加" size="small" data-field="risks" onclick={handleAddListItem}></lightning-button-icon>
+                            </div>
+                            <template for:each={editableRisks} for:item="item">
+                                <div key={item.index} class="slds-grid slds-m-bottom_x-small">
+                                    <lightning-input class="slds-grow" value={item.value} data-field="risks" data-index={item.index} onchange={handleListItemChange}></lightning-input>
+                                    <lightning-button-icon icon-name="utility:delete" variant="bare" data-field="risks" data-index={item.index} onclick={handleRemoveListItem} class="slds-m-left_x-small"></lightning-button-icon>
+                                </div>
+                            </template>
+                        </div>
+                        <!-- Competitors -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                <span class="slds-text-title_bold">競合他社</span>
+                                <lightning-button-icon icon-name="utility:add" alternative-text="追加" size="small" data-field="competitors" onclick={handleAddListItem}></lightning-button-icon>
+                            </div>
+                            <template for:each={editableCompetitors} for:item="item">
+                                <div key={item.index} class="slds-grid slds-m-bottom_x-small">
+                                    <lightning-input class="slds-grow" value={item.value} data-field="competitors" data-index={item.index} onchange={handleListItemChange}></lightning-input>
+                                    <lightning-button-icon icon-name="utility:delete" variant="bare" data-field="competitors" data-index={item.index} onclick={handleRemoveListItem} class="slds-m-left_x-small"></lightning-button-icon>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </template>
+    </div>
+</template>

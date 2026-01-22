@@ -1,0 +1,365 @@
+:host {
+    display: block;
+}
+
+/* Recording indicator */
+.recording-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-color: #ea001e;
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Button container with proper spacing */
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+}
+
+.control-button {
+    min-width: 100px;
+}
+
+/* Transcript area fallback */
+.transcript-area {
+    min-height: 150px;
+}
+
+/* Interim recognition box */
+.interim-box {
+    background-color: #f4f6f9;
+    border-left: 4px solid #0176d3;
+}
+
+.interim-text {
+    color: #706e6b;
+    font-style: italic;
+}
+
+/* Analyze button */
+.analyze-button {
+    width: 100%;
+}
+
+/* Audio Player */
+.audio-player-container {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+    border-radius: 8px;
+    padding: 12px 16px;
+}
+
+.audio-time-display {
+    font-family: 'SF Mono', 'Monaco', monospace;
+    font-size: 14px;
+    color: #181818;
+}
+
+.current-time {
+    font-weight: 600;
+    color: #0070d2;
+}
+
+.time-separator {
+    color: #706e6b;
+}
+
+.total-time {
+    color: #706e6b;
+}
+
+.audio-element {
+    display: none;
+}
+
+/* Audio Controls */
+.audio-controls-row {
+    gap: 4px;
+}
+
+.seek-btn {
+    flex-shrink: 0;
+}
+
+.seek-step-selector {
+    display: inline-flex;
+    align-items: center;
+}
+
+.seek-step-btn {
+    font-size: 12px;
+    padding: 0 8px;
+}
+
+/* Transcript Container */
+.transcript-container {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    max-height: 500px;
+}
+
+.transcript-header {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f3f3f3;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+}
+
+/* Transcript Segments */
+.transcript-segments {
+    flex: 1;
+    min-height: 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.transcript-segment {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background: #fafbfc;
+    border-radius: 6px;
+    border-left: 3px solid #d8dde6;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.transcript-segment:hover {
+    background: #f0f7ff;
+    border-left-color: #0070d2;
+}
+
+.transcript-segment.segment-active {
+    background: #e6f4ff;
+    border-left-color: #0070d2;
+    box-shadow: 0 2px 4px rgba(0, 112, 210, 0.15);
+}
+
+.segment-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.segment-timestamp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    padding: 2px 8px;
+    background: #0070d2;
+    color: white;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Monaco', monospace;
+}
+
+.segment-speaker {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    background: #e6f7ed;
+    color: #2e844a;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.segment-text {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #181818;
+}
+
+/* Edit Mode */
+.segment-edit {
+    align-items: center;
+}
+
+.segment-timestamp-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    background: #706e6b;
+    color: white;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Monaco', monospace;
+}
+
+.segment-input {
+    width: 100%;
+}
+
+.delete-segment-btn {
+    color: #ea001e;
+}
+
+.delete-segment-btn:hover {
+    background: #fde8e8;
+    border-radius: 4px;
+}
+
+/* Timestamp edit controls */
+.timestamp-edit-row {
+    gap: 4px;
+}
+
+.timestamp-input {
+    width: 70px;
+    text-align: center;
+    font-family: 'SF Mono', 'Monaco', monospace;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.adjust-btn {
+    flex-shrink: 0;
+}
+
+/* Scrollbar styling */
+.transcript-segments::-webkit-scrollbar {
+    width: 6px;
+}
+
+.transcript-segments::-webkit-scrollbar-track {
+    background: #f3f3f3;
+    border-radius: 3px;
+}
+
+.transcript-segments::-webkit-scrollbar-thumb {
+    background: #d8dde6;
+    border-radius: 3px;
+}
+
+.transcript-segments::-webkit-scrollbar-thumb:hover {
+    background: #b0adab;
+}
+
+/* Edit toggle button */
+.edit-toggle-btn {
+    --slds-c-button-neutral-color-background: #f3f3f3;
+}
+
+/* Transcript Display (formatted view) */
+.transcript-display {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.transcript-content {
+    max-height: 400px;
+    overflow-y: auto;
+    line-height: 1.8;
+}
+
+.paragraph-normal {
+    margin-bottom: 8px;
+    color: #181818;
+    font-size: 14px;
+}
+
+.paragraph-header {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #0070d2;
+    font-size: 15px;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 4px;
+}
+
+.paragraph-speaker {
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: #fafbfc;
+    border-left: 3px solid #2e844a;
+    border-radius: 0 4px 4px 0;
+    font-size: 14px;
+}
+
+.paragraph-bullet {
+    margin-bottom: 4px;
+    padding-left: 16px;
+    color: #181818;
+    font-size: 14px;
+}
+
+/* Edit mode textarea */
+.transcript-area-edit {
+    --slds-c-textarea-sizing-min-height: 300px;
+}
+
+.transcript-area-edit textarea {
+    min-height: 300px !important;
+    font-size: 14px;
+    line-height: 1.6;
+    background: #fffef5;
+    border-color: #0070d2;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+    .button-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .control-button {
+        width: 100%;
+    }
+
+    .segment-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .segment-timestamp {
+        margin-bottom: 4px;
+    }
+
+    .transcript-segments {
+        max-height: 300px;
+    }
+
+    .audio-controls-row {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .seek-step-selector {
+        margin-left: 0 !important;
+        margin-top: 8px;
+        width: 100%;
+        justify-content: center;
+    }
+}

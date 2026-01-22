@@ -1,0 +1,131 @@
+<template>
+    <lightning-card title="レポートプレビュー / Report Preview" icon-name="utility:preview">
+        <div slot="actions">
+            <lightning-button
+                variant="brand"
+                label="PDFダウンロード"
+                title="Download PDF"
+                icon-name="utility:download"
+                onclick={handleDownloadPDF}
+                disabled={isDownloadDisabled}>
+            </lightning-button>
+        </div>
+
+        <div class="slds-p-around_medium">
+            <template if:true={isLoading}>
+                <div class="slds-is-relative" style="min-height: 200px;">
+                    <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+                <template if:true={hasData}>
+                    <!-- Report Preview Content -->
+                    <div class="report-preview slds-box slds-theme_default">
+                        <!-- Header -->
+                        <div class="report-header slds-p-around_medium slds-theme_shade">
+                            <h1 class="slds-text-heading_large slds-text-align_center">訪問報告書</h1>
+                            <h2 class="slds-text-heading_small slds-text-align_center slds-text-color_weak">Visit Report</h2>
+                        </div>
+
+                        <!-- Basic Info -->
+                        <div class="slds-p-around_medium">
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <dl class="slds-dl_horizontal">
+                                        <dt class="slds-dl_horizontal__label">
+                                            <span class="slds-text-title_bold">訪問日:</span>
+                                        </dt>
+                                        <dd class="slds-dl_horizontal__detail">{formattedVisitDate}</dd>
+                                    </dl>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <dl class="slds-dl_horizontal">
+                                        <dt class="slds-dl_horizontal__label">
+                                            <span class="slds-text-title_bold">会社名:</span>
+                                        </dt>
+                                        <dd class="slds-dl_horizontal__detail">{reportData.companyName}</dd>
+                                    </dl>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <dl class="slds-dl_horizontal">
+                                        <dt class="slds-dl_horizontal__label">
+                                            <span class="slds-text-title_bold">担当者:</span>
+                                        </dt>
+                                        <dd class="slds-dl_horizontal__detail">{contactDisplay}</dd>
+                                    </dl>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <dl class="slds-dl_horizontal">
+                                        <dt class="slds-dl_horizontal__label">
+                                            <span class="slds-text-title_bold">訪問目的:</span>
+                                        </dt>
+                                        <dd class="slds-dl_horizontal__detail">{reportData.visitPurpose}</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Discussion Summary -->
+                        <div class="slds-p-around_medium slds-border_top">
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">
+                                <lightning-icon icon-name="utility:comments" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                商談内容 / Discussion Summary
+                            </h3>
+                            <ul class="slds-list_dotted">
+                                <template for:each={discussionItems} for:item="item">
+                                    <li key={item}>{item}</li>
+                                </template>
+                            </ul>
+                        </div>
+
+                        <!-- Opportunity Info -->
+                        <template if:true={hasOpportunityAmount}>
+                            <div class="slds-p-around_medium slds-border_top slds-theme_info">
+                                <div class="slds-grid">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <span class="slds-text-title_bold">商談金額:</span>
+                                        <span class="slds-text-heading_medium slds-m-left_small">{formattedAmount}</span>
+                                    </div>
+                                    <template if:true={reportData.expectedCloseDate}>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <span class="slds-text-title_bold">予想成約日:</span>
+                                            <span class="slds-m-left_small">{formattedCloseDate}</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Next Actions -->
+                        <div class="slds-p-around_medium slds-border_top">
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">
+                                <lightning-icon icon-name="utility:task" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                次のアクション / Next Actions
+                            </h3>
+                            <ul class="slds-list_dotted">
+                                <template for:each={actionItems} for:item="item">
+                                    <li key={item}>{item}</li>
+                                </template>
+                            </ul>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="slds-p-around_small slds-border_top slds-text-align_right slds-text-color_weak">
+                            <small>Generated by Salesforce AI Visit Report System</small>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:false={hasData}>
+                    <div class="slds-illustration slds-illustration_small">
+                        <div class="slds-text-longform">
+                            <h3 class="slds-text-heading_medium">プレビューするデータがありません</h3>
+                            <p class="slds-text-body_regular">音声入力またはフォームにデータを入力してください。</p>
+                        </div>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>

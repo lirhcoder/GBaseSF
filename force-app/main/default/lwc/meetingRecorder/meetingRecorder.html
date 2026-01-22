@@ -1,0 +1,217 @@
+<template>
+    <lightning-card title="AI 会議分析アシスタント" icon-name="standard:voice_call">
+        <!-- Progress Indicator -->
+        <div class="slds-m-around_medium">
+            <lightning-progress-indicator current-step={currentStep} type="path" variant="base">
+                <lightning-progress-step label="入力" value="input"></lightning-progress-step>
+                <lightning-progress-step label="分析" value="analyzing"></lightning-progress-step>
+                <lightning-progress-step label="結果" value="result"></lightning-progress-step>
+                <lightning-progress-step label="保存" value="saved"></lightning-progress-step>
+            </lightning-progress-indicator>
+        </div>
+
+        <!-- Loading Overlay -->
+        <template if:true={isLoading}>
+            <div class="loading-overlay">
+                <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+                <p class="slds-m-top_medium slds-text-heading_small">{loadingMessage}</p>
+            </div>
+        </template>
+
+        <!-- Step 1: Input -->
+        <template if:true={isInputStep}>
+            <div class="slds-p-around_medium">
+                <!-- Language Selection -->
+                <div class="slds-m-bottom_medium">
+                    <lightning-combobox
+                        name="language"
+                        label="分析言語"
+                        value={selectedLanguage}
+                        options={languageOptions}
+                        onchange={handleLanguageChange}
+                        class="language-selector">
+                    </lightning-combobox>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="slds-tabs_default">
+                    <ul class="slds-tabs_default__nav tab-nav-container" role="tablist">
+                        <template for:each={tabs} for:item="tab">
+                            <li key={tab.name}
+                                class={tab.tabClass}
+                                title={tab.label}
+                                role="presentation"
+                                data-tab={tab.name}
+                                onclick={handleTabClick}>
+                                <a class="slds-tabs_default__link" role="tab" aria-selected={tab.active}>
+                                    <lightning-icon icon-name={tab.icon} size="x-small" class="slds-m-right_small"></lightning-icon>
+                                    {tab.label}
+                                </a>
+                            </li>
+                        </template>
+                    </ul>
+
+                    <!-- Voice Input Tab -->
+                    <template if:true={isVoiceTab}>
+                        <div class="slds-tabs_default__content slds-show">
+                            <c-voice-input
+                                existing-text={voiceTranscript}
+                                ontranscriptchange={handleTranscriptChange}
+                                onanalyze={handleVoiceAnalyze}>
+                            </c-voice-input>
+                        </div>
+                    </template>
+
+                    <!-- Text Input Tab -->
+                    <template if:true={isTextTab}>
+                        <div class="slds-tabs_default__content slds-show">
+                            <div class="slds-form-element">
+                                <!-- Header with buttons -->
+                                <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                                    <span class="slds-text-title_bold">会議内容</span>
+                                    <div class="slds-button-group">
+                                        <lightning-button
+                                            variant="neutral"
+                                            label="デモデータを入力"
+                                            title="サンプルの会議記録を自動入力"
+                                            icon-name="utility:paste"
+                                            onclick={handleLoadDemoData}
+                                            class="demo-button">
+                                        </lightning-button>
+                                        <template if:true={hasTranscriptText}>
+                                            <lightning-button
+                                                variant={textEditButtonVariant}
+                                                label={textEditButtonLabel}
+                                                icon-name={textEditButtonIcon}
+                                                onclick={handleToggleTextEditMode}
+                                                class="edit-mode-button">
+                                            </lightning-button>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Edit Mode: Textarea -->
+                                <template if:true={isTextEditMode}>
+                                    <lightning-textarea
+                                        value={textTranscript}
+                                        placeholder="会議記録、通話内容を入力またはペーストしてください..."
+                                        onchange={handleTextareaChange}
+                                        max-length="50000"
+                                        class="transcript-textarea">
+                                    </lightning-textarea>
+                                    <div class="slds-form-element__help slds-text-color_weak slds-m-top_x-small">
+                                        入力済み {transcriptLength} 文字
+                                    </div>
+                                </template>
+
+                                <!-- View Mode: Formatted Display -->
+                                <template if:false={isTextEditMode}>
+                                    <template if:true={hasTranscriptText}>
+                                        <div class="formatted-transcript-container" onclick={handleToggleTextEditMode}>
+                                            <template for:each={formattedTranscriptLines} for:item="line">
+                                                <div key={line.id} class={line.className}>{line.text}</div>
+                                            </template>
+                                        </div>
+                                        <div class="slds-text-color_weak slds-m-top_x-small slds-text-body_small">
+                                            {transcriptLength} 文字 · クリックして編集
+                                        </div>
+                                    </template>
+                                    <template if:false={hasTranscriptText}>
+                                        <lightning-textarea
+                                            value={textTranscript}
+                                            placeholder="会議記録、通話内容を入力またはペーストしてください..."
+                                            onchange={handleTextareaChange}
+                                            max-length="50000"
+                                            class="transcript-textarea">
+                                        </lightning-textarea>
+                                    </template>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Upload Tab -->
+                    <template if:true={isUploadTab}>
+                        <div class="slds-tabs_default__content slds-show">
+                            <c-audio-uploader
+                                language={selectedLanguage}
+                                onusetranscription={handleAudioTranscription}>
+                            </c-audio-uploader>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Analyze Button -->
+                <div class="slds-m-top_large slds-text-align_center">
+                    <lightning-button
+                        variant="brand"
+                        label={analyzeButtonLabel}
+                        onclick={startAnalysis}
+                        disabled={isAnalyzeDisabled}
+                        icon-name="utility:sparkles"
+                        class="analyze-button">
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+
+        <!-- Step 2: Analyzing (handled by loading overlay) -->
+
+        <!-- Step 3: Analysis Result -->
+        <template if:true={isResultStep}>
+            <div class="slds-p-around_medium">
+                <c-meeting-analysis-panel
+                    analysis-data={analysisResult}
+                    onupdate={handleResultUpdate}
+                    onsave={handleSave}
+                    onback={handleNewMeeting}>
+                </c-meeting-analysis-panel>
+            </div>
+        </template>
+
+        <!-- Step 4: Saved -->
+        <template if:true={isSavedStep}>
+            <div class="slds-p-around_large slds-text-align_center">
+                <div class="success-icon">
+                    <lightning-icon icon-name="action:approval" size="large"></lightning-icon>
+                </div>
+                <h2 class="slds-text-heading_medium slds-m-top_medium">保存完了！</h2>
+                <p class="slds-text-body_regular slds-m-top_small slds-text-color_weak">
+                    会議分析がSalesforce CRMに保存されました
+                </p>
+
+                <div class="slds-m-top_large">
+                    <div class="slds-grid slds-grid_align-center slds-gutters">
+                        <div class="slds-col">
+                            <lightning-button
+                                variant="neutral"
+                                label="レコードを表示"
+                                onclick={handleViewRecord}
+                                icon-name="utility:open">
+                            </lightning-button>
+                        </div>
+                        <div class="slds-col">
+                            <lightning-button
+                                variant="brand"
+                                label="新規会議記録"
+                                onclick={handleNewMeeting}
+                                icon-name="utility:add">
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary of what was created -->
+                <div class="slds-m-top_large slds-box slds-theme_shade">
+                    <p class="slds-text-title_bold slds-m-bottom_small">作成されたレコード:</p>
+                    <ul class="slds-list_dotted">
+                        <li>1件の訪問レポート</li>
+                        <template if:true={hasSavedTasks}>
+                            <li>{savedTaskCount} 件のToDoタスク</li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+        </template>
+    </lightning-card>
+</template>
